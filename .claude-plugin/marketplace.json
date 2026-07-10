@@ -1,0 +1,11 @@
+{
+  "name": "otakoyi",
+  "owner": { "name": "Otakoyi Software" },
+  "plugins": [
+    {
+      "name": "mae",
+      "source": "./",
+      "description": "Spec-driven development workflow. Requires superpowers@claude-plugins-official."
+    }
+  ]
+}
