@@ -1,24 +1,28 @@
 # mae — Claude Code plugin for spec-driven development (design)
 
-**Date:** 2026-07-10 · **Status:** approved design, pre-plan (rev 2)
-**Decisions locked with the owner:** plugin + `/mae:init` scaffold skill · vendor selected
-superpowers skills (MIT, with attribution) · stack-agnostic core with stack presets ·
-distributed via a private git marketplace · canonical plugin repo layout (option A) ·
-**skills only, no `commands/`** · constitution lives in `docs/`, no root template ·
-Conventional Commits v1.0.0 mandated by the git convention doc.
+**Date:** 2026-07-10 · **Status:** approved design, pre-plan (rev 3 — wrapper model)
+**Decisions locked with the owner:** plugin + `/mae:init` scaffold skill ·
+**mae wraps superpowers instead of vendoring it** (superpowers is a required companion
+plugin; mae skills invoke `superpowers:*` by name) · stack-agnostic core with stack
+presets · distributed via a private git marketplace · skills only, no `commands/` ·
+constitution lives in `docs/`, no root template · Conventional Commits v1.0.0 mandated
+by the git convention doc · lean agent roster (3 core + 2 optional e2e) ·
+ask-when-uncertain interview doctrine cross-cutting · `using-mae` ≤ 60 lines ·
+scaffold versioning · CI enforcement of conventions · cross-platform hooks in v1.
 
 ## 1. Problem
 
 The repo currently holds an SDD workflow **skeleton** migrated from another project:
 agents, skills, rules, and hooks duplicated across `.agents/*` and `.claude/*`, no
 `.claude-plugin/plugin.json`, and `@maeton/*`-specific leftovers in rules and
-`settings.json`. The goal is a **Claude Code plugin** that colleagues install once
-(`/plugin install`), which:
+`settings.json`. The goal is a **Claude Code plugin** that colleagues install once,
+which:
 
 1. scaffolds or adopts a project's SDD structure (`/mae:init`),
 2. drives feature work through a small skill surface (spec → plan → implement → finish),
 3. generates and maintains project documentation as part of the pipeline,
-4. behaves like obra/superpowers: skills-first discipline, injected at session start.
+4. **delegates process discipline to superpowers** (debugging, planning, verification,
+   TDD, reviews) instead of maintaining copies — mae owns only the SDD layer.
 
 ## 2. Repository layout (target)
 
@@ -37,27 +41,17 @@ mae/
 │   ├── feature-start/        # cleaned of @maeton / app.config.ts refs
 │   ├── feature-finish/
 │   ├── fix/
-│   ├── using-mae/            # meta-skill, injected at SessionStart (see §4)
-│   ├── plan-writing/         # ┐
-│   ├── plan-execution/       # │
-│   ├── test-first/           # │ process skills — ideas adapted from
-│   ├── root-cause-debugging/ # │ obra/superpowers, renamed & rewritten
-│   ├── verify-before-done/   # │ in mae terminology (see §4)
-│   ├── review-request/       # │
-│   ├── review-response/      # │
-│   ├── workspace-isolation/  # │
-│   ├── parallel-agents/      # │
-│   ├── subagent-orchestration/           # │
-│   ├── skill-authoring/                  # ┘ (maintainers only)
+│   ├── using-mae/            # meta-skill + superpowers integration contract (§4), ≤ 60 lines
 │   └── <knowledge skills>    # prisma-*, stripe-*, shadcn, magic-ui, better-auth — moved as-is
-├── agents/                   # 3 core subagents (see §3.2), cleaned of stack leftovers
+├── agents/                   # 3 core subagents (§3.2), cleaned of stack leftovers
 ├── hooks/
 │   ├── hooks.json            # PreToolUse guard · PostToolUse format · SessionStart using-mae
+│   ├── run-hook.cmd          # cross-platform polyglot wrapper (Windows without WSL) — v1
 │   ├── guard.sh              # blocks rm -rf, force-push, reset --hard, protected paths
 │   ├── format.sh
-│   └── session-start.sh      # prints skills/using-mae/SKILL.md content as context
+│   └── session-start.sh      # injects using-mae; warns if superpowers is not installed
 ├── templates/                # everything /mae:init scaffolds INTO a user project
-│   ├── AGENTS.md
+│   ├── AGENTS.md             # declares the mae workflow as project law; carries the version stamp
 │   ├── rules/
 │   │   ├── _core/            # stack-agnostic rules (engineering.md, testing discipline)
 │   │   ├── typescript/       # current TS rules, cleaned + correct paths: globs
@@ -65,19 +59,22 @@ mae/
 │   ├── specs/                # README + _template/spec.md
 │   ├── agents/               # optional e2e-planner / e2e-runner (scaffolded on opt-in, §3.2)
 │   ├── docs/
-│   │   ├── constitution.md   # the engineering-law template (replaces root CONSTITUTION.template.md)
+│   │   ├── constitution.md   # the engineering-law template (no root CONSTITUTION.template.md)
 │   │   ├── conventions/      # git.md (Conventional Commits v1.0.0), workflow.md, documentation.md
 │   │   └── _templates/       # project.md, architecture-map.md, service-doc.md
+│   ├── ci/                   # CI check template: validate-workflow + commit-convention check
 │   ├── scripts/validate-workflow.mjs
-│   └── settings.json         # permissions only (deny .env/secrets/docs/constitution.md, ask push/PR)
-├── scripts/                  # plugin's own CI checks (see §7)
-└── README.md                 # install & usage guide for colleagues
+│   └── settings.json         # permissions + enabledPlugins for BOTH mae and superpowers
+├── scripts/check-plugin.mjs  # plugin's own CI checks incl. superpowers-compat (§7)
+├── docs/superpowers-compat.md# the list of superpowers skills mae depends on + tested version
+└── README.md                 # install & usage guide; superpowers is REQUIRED, not optional
 ```
 
 **Why this split:** agents/skills/hooks execute from the plugin cache
 (`${CLAUDE_PLUGIN_ROOT}`) and update for everyone via `/plugin update`. Only artifacts
 that must live in the project repo (law, rules, specs, docs, validator, permissions)
-are scaffolded by `/mae:init`.
+are scaffolded by `/mae:init`. Process discipline is **not** in this repo at all — it
+is consumed from the superpowers plugin at runtime.
 
 ## 3. Skill surface (external API — 5 workflow skills)
 
@@ -88,18 +85,24 @@ command wrappers — the skill file is the single artifact.
 |---|---|
 | `/mae:init` | **NEW.** Questionnaire-driven bootstrap — see §3.1. |
 | `/mae:explore` | renamed from `project-explore`: survey → `docs/PROJECT.md` + `docs/architecture-map.md` |
-| `/mae:feature-start` | unchanged flow; spec-authoring step absorbs superpowers' brainstorming dialogue (one question at a time before Plan Mode) |
-| `/mae:feature-finish` | unchanged flow; gains the `verify-before-done` gate |
-| `/mae:fix` | unchanged flow; built on `root-cause-debugging` (root cause before fix) |
+| `/mae:feature-start` | spec authoring (own interview, §4.1) → recon → spec-analyst → Plan Mode via `superpowers:writing-plans` (plan saved to `specs/<feature>/plan.md`) |
+| `/mae:feature-finish` | review loop → `superpowers:verification-before-completion` gate → test gate → DoD vs diff → docs → drafts a PR, then STOPS |
+| `/mae:fix` | reproduce via `superpowers:systematic-debugging` → failing test → smallest fix → same gate → record |
 
 Push / PR remain human-only.
 
 ### 3.1 `/mae:init` — the questionnaire
 
-Runs as an interactive interview (AskUserQuestion, one topic at a time), branching on
-project state:
+Runs as an interactive interview (AskUserQuestion, one topic at a time, §4.1),
+branching on project state:
 
-**Step 0 — detect project state.** Empty/near-empty repo (no source tree, no manifest)
+**Step 0 — dependency check.** Verify the superpowers plugin is available (its
+`superpowers:*` skills appear in the session's skill list; the session-start hook also
+checks the plugin cache on disk). If missing: stop and give the exact install commands
+(`/plugin marketplace add` … `/plugin install superpowers@claude-plugins-official`).
+No scaffolding happens on a machine without the dependency.
+
+**Step 1 — detect project state.** Empty/near-empty repo (no source tree, no manifest)
 → **new-project branch**. Otherwise → **existing-project branch**. Ambiguous → ask.
 
 **New-project branch:**
@@ -125,15 +128,16 @@ project state:
 - Detect/confirm stack → pick rules preset (`_core` + `typescript`/`php`; unknown
   stack → `_core` only, flag for manual completion).
 - Interview for the engineering law → generate **`docs/constitution.md`** (stack lock,
-  hard rules, definition of done). There is **no root `CONSTITUTION.template.md`** —
-  the template lives inside the plugin (`templates/docs/constitution.md`) and the
-  generated file lives in the project's `docs/`.
+  hard rules, definition of done). The template lives inside the plugin
+  (`templates/docs/constitution.md`); the generated file lives in the project's `docs/`.
 - Scaffold `docs/conventions/` including **`git.md`** mandating
   [Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/v1.0.0/):
   commit format (`type(scope)!: description`), allowed types, breaking-change marker,
   branch naming (`feat/<spec-name>`), squash-merge to `main`, push/PR human-only.
-- Scaffold `specs/`, `AGENTS.md`, `scripts/validate-workflow.mjs`; merge permissions
-  into `.claude/settings.json`.
+- Scaffold `specs/`, `AGENTS.md`, `scripts/validate-workflow.mjs`; merge into
+  `.claude/settings.json`: permissions **and `enabledPlugins` for both `mae` (company
+  marketplace) and `superpowers@claude-plugins-official`** — a colleague opening the
+  project gets both plugins enabled automatically.
 - **E2E opt-in:** ask whether the project needs live e2e testing. If yes, scaffold
   `e2e-planner` / `e2e-runner` from `templates/agents/` into the project's
   `.claude/agents/` **and** register the Playwright MCP server automatically (write the
@@ -157,48 +161,63 @@ The migrated roster of 9 shrinks to avoid agent/skill conflicts:
 | Agent | Status | Rationale |
 |---|---|---|
 | `spec-analyst` | **kept, absorbs `devils-advocate`** | one pre-plan critic with two phases: reconcile spec vs constitution/code + adversarial attack in clean context. One dispatch instead of two. |
-| `code-reviewer` | **kept** | single source of review criteria; `review-request` / `review-response` skills orchestrate it and never duplicate the criteria. |
-| `test-runner` | **kept** | keeps noisy gate output (lint → typecheck → test → build) out of the main context; `verify-before-done` explicitly dispatches it — no second verification route. |
-| `architect` | **removed** | Plan Mode + `plan-writing` cover design; reintroduce only if a real ADR need emerges. |
+| `code-reviewer` | **kept** | single source of review criteria; `superpowers:requesting-code-review` dispatches it; `superpowers:receiving-code-review` governs reacting to its findings. Criteria are never duplicated in skills. |
+| `test-runner` | **kept** | keeps noisy gate output (lint → typecheck → test → build) out of the main context; `feature-finish` dispatches it as the single verification route. |
+| `architect` | **removed** | Plan Mode + `superpowers:writing-plans` cover design; reintroduce only if a real ADR need emerges. |
 | `devils-advocate` | **merged** into `spec-analyst` | see above. |
 | `codebase-explorer` | **removed** | the built-in Explore agent does recon; skills reference it directly. |
-| `implementer` | **removed** | execution doctrine is unified in the skills: `plan-execution` (main-context execution with checkpoints) and `subagent-orchestration` (fresh general-purpose subagent per plan task). No named implementer — no competing doctrine. |
+| `implementer` | **removed** | execution doctrine belongs to superpowers: `superpowers:executing-plans` (main-context, checkpoints) or `superpowers:subagent-driven-development` (fresh subagent per task). No named implementer — no competing doctrine. |
 | `e2e-planner` / `e2e-runner` | **optional** | live in `templates/agents/`, scaffolded into the project only when `/mae:init`'s e2e question is answered yes, together with automatic Playwright MCP registration (§3.1). Not part of the plugin's `agents/` — colleagues without Playwright never see broken agents. |
 
-## 4. Process skills (ideas adapted from superpowers, renamed & rewritten)
+## 4. Superpowers as a dependency (the wrapper model)
 
-The mae plugin must **not read as a superpowers derivative**: every process skill gets
-its own mae-native name and is rewritten in mae terminology, while keeping the proven
-mechanics. Attribution lives in exactly one place — `docs/UPSTREAM.md` plus the upstream
-MIT notice (legal minimum) — **not** in skill files, names, or frontmatter.
+mae does **not** vendor, rename, or rewrite superpowers skills. It depends on the
+superpowers plugin being installed and invokes its skills by qualified name at defined
+pipeline stages. Maintenance surface: 6 mae skills + 3 agents + templates; process
+discipline updates arrive via superpowers' own releases.
 
-**Adaptation, not copying.** Terminology is rewritten to this pipeline: specs in
-`specs/<feature>/spec.md`, DoD, `docs/constitution.md`, the lean agent roster (§3.2).
-Overlapping mechanics are merged, not duplicated:
+### The integration contract (lives in `using-mae`)
 
-| mae skill | Source idea | Role in the pipeline |
-|---|---|---|
-| **`using-mae`** | `using-superpowers` | SessionStart-injected meta-skill — the core mechanism. Skill-first discipline ("1% chance a skill applies → invoke it"), red-flags anti-rationalization table, the 5-skill surface, the two-documents concept (constitution vs PROJECT), and the legitimacy of the trivial-change route (size routing is visible, not a secret). **Hard size budget: ≤ 60 lines** — it is paid on every session start; details live in the skills it points to. |
-| — | `brainstorming` | folded into `feature-start` step 1 (spec authoring, one question at a time). No standalone skill: the spec IS the design artifact. |
-| **`plan-writing`** / **`plan-execution`** | `writing-plans` / `executing-plans` | back `feature-start`'s Plan Mode phase and the unified execution doctrine (no implementer agent — §3.2) |
-| **`test-first`** | `test-driven-development` | binding rule for whoever implements — main context or dispatched subagent (red → green → refactor) |
-| **`root-cause-debugging`** | `systematic-debugging` | the heart of `/mae:fix` — phases, root cause before any fix |
-| **`verify-before-done`** | `verification-before-completion` | gate inside `feature-finish` — evidence before claims |
-| **`review-request`** / **`review-response`** | `requesting-` / `receiving-code-review` | `feature-finish` review loop; review criteria live only in the `code-reviewer` agent — the skills dispatch it and handle its findings |
-| **`workspace-isolation`** | `using-git-worktrees` | isolated workspaces for feature work |
-| **`parallel-agents`** | `dispatching-parallel-agents` | fan-out for independent tasks |
-| **`subagent-orchestration`** | `subagent-driven-development` | executing plan tasks through fresh general-purpose subagents (the unified doctrine, §3.2) |
-| **`skill-authoring`** | `writing-skills` | for plugin maintainers (evolving the plugin itself) |
+| mae stage | superpowers skill invoked |
+|---|---|
+| `feature-start` → planning phase | `superpowers:writing-plans` — plan location overridden to `specs/<feature>/plan.md` (upstream supports user-preference override) |
+| plan execution | `superpowers:executing-plans` (inline) or `superpowers:subagent-driven-development` (per-task subagents) — chosen at plan approval |
+| independent parallel tasks | `superpowers:dispatching-parallel-agents` |
+| workspace isolation | `superpowers:using-git-worktrees` |
+| implementation discipline | `superpowers:test-driven-development` |
+| `fix` → diagnosis | `superpowers:systematic-debugging` |
+| `feature-finish` → completion gate | `superpowers:verification-before-completion` |
+| `feature-finish` → review loop | `superpowers:requesting-code-review` / `superpowers:receiving-code-review`, dispatching mae's `code-reviewer` agent |
+| plugin maintainers | `superpowers:writing-skills` |
 
-**Format patterns adopted from superpowers:** frontmatter descriptions with explicit
-"Use when…" triggers, checklists that become todos, red-flag tables, the cross-platform
-`run-hook.cmd` wrapper for hooks.
+**Not delegated:** spec authoring. `feature-start` runs its own interview (§4.1) and
+produces `specs/<feature>/spec.md` — `superpowers:brainstorming` is **not** dispatched
+standalone (its design-doc format and location differ from the mae spec format).
+
+### Entry-point precedence (the doctrine-conflict fix)
+
+Both plugins inject SessionStart context. `using-mae` states, and the scaffolded
+project `AGENTS.md` repeats (upstream explicitly yields to CLAUDE.md/AGENTS.md
+instructions):
+
+> Feature and bug work in this project enters through `/mae:feature-start` and
+> `/mae:fix` only. Superpowers process skills run **inside** mae stages, never as
+> alternative entry points; if `superpowers:brainstorming` or
+> `superpowers:writing-plans` would trigger on feature work, route to the mae skill
+> instead.
+
+### Compatibility tracking
+
+`docs/superpowers-compat.md` records every `superpowers:*` skill name mae references
+and the upstream version they were last verified against. `scripts/check-plugin.mjs`
+asserts that all `superpowers:*` references in mae skills/agents appear in that list —
+an upstream rename shows up as a CI failure with a single file to update.
 
 ### 4.1 The interview doctrine (ask-when-uncertain) — cross-cutting
 
-A practice (inspired by mattpocock's "grilling" skill; noted in `docs/UPSTREAM.md`,
-no code vendored) baked into mae everywhere an agent faces a decision, not shipped
-as a separate skill:
+A practice (inspired by mattpocock's "grilling" skill; noted in
+`docs/superpowers-compat.md`, no code vendored) baked into mae everywhere an agent
+faces a decision, not shipped as a separate skill:
 
 1. **Design decisions belong to the user.** When uncertain between viable options,
    the agent asks — it never silently picks for the user.
@@ -216,9 +235,18 @@ Where it is enforced (written into each skill's text):
 - **`feature-start`** — spec authoring walks every branch of the decision tree until
   resolved before entering Plan Mode; `spec-analyst`'s surfaced questions feed this
   interview rather than being dumped as a list.
-- **`plan-writing`** — a plan with an unresolved decision point is not presented as
-  final; the point is asked first.
+- **planning** — a plan with an unresolved decision point is not presented as final;
+  the point is asked first.
 - **`fix`** — ambiguous reproduction or acceptance criterion → ask before touching code.
+
+### `using-mae` (SessionStart-injected meta-skill)
+
+The core mechanism, kept to a **hard size budget of ≤ 60 lines** (it is paid on every
+session start): skill-first discipline ("1% chance a skill applies → invoke it"), the
+5-skill surface, the integration-contract table, the entry-point precedence rule, the
+interview doctrine, the two-documents concept (constitution vs PROJECT), and the
+legitimacy of the trivial-change route (size routing is visible, not a secret).
+Details live in the skills it points to.
 
 ## 5. Hooks & safety
 
@@ -231,12 +259,15 @@ no guard. `hooks/hooks.json` in the plugin wires:
   secrets). Must degrade gracefully (no-op checks) in projects not yet scaffolded.
 - **PostToolUse (Edit|Write):** `format.sh` — formats touched files; detects available
   formatter per stack, exits 0 silently when none.
-- **SessionStart:** injects `using-mae` skill content (session-start context pattern).
+- **SessionStart:** injects `using-mae` skill content; additionally checks the plugin
+  cache for superpowers and appends a visible warning to the injected context when the
+  dependency is missing.
 
-Project-side `settings.json` (scaffolded) carries **permissions only**: deny on
-`.env*`/secrets/`docs/constitution.md`/`.claude/**`, ask on `git push`/`gh pr create`/
-network/package-add. The current `@maeton/*` allow-list is dropped; presets contribute a
-small generic allow-list (e.g. `pnpm lint/typecheck/test` for TS).
+Project-side `settings.json` (scaffolded) carries permissions **and plugin enablement**:
+deny on `.env*`/secrets/`docs/constitution.md`/`.claude/**`, ask on `git push`/
+`gh pr create`/network/package-add; `enabledPlugins` for mae and superpowers. The
+current `@maeton/*` allow-list is dropped; presets contribute a small generic
+allow-list (e.g. `pnpm lint/typecheck/test` for TS).
 
 ## 6. Documentation generation
 
@@ -255,16 +286,20 @@ A CI script in the plugin repo (`scripts/check-plugin.mjs`, Node built-ins only)
 
 1. `plugin.json` / `marketplace.json` are valid and consistent (name, version).
 2. Every skill/agent has valid frontmatter (name, description with trigger).
-3. Hooks are executable; `hooks.json` references existing files.
+3. Hooks are executable; `hooks.json` references existing files; every hook entry goes
+   through `run-hook.cmd`.
 4. Smoke test: run the scaffold logic against a temp dir, then run
    `validate-workflow.mjs` there and assert it passes on a fresh scaffold.
 5. Internal link check across plugin Markdown (no references to removed paths —
-   `CONSTITUTION.md` at root, `commands/`, `project-explore`, and no superpowers skill
-   names — `systematic-debugging`, `writing-plans`, etc. — outside `docs/UPSTREAM.md`).
+   `CONSTITUTION.md` at root, `commands/`, `project-explore`).
+6. **Superpowers-compat check:** every `superpowers:*` name referenced anywhere in
+   `skills/` or `agents/` appears in `docs/superpowers-compat.md`.
+7. `using-mae/SKILL.md` body is ≤ 60 lines.
 
-Manual acceptance: install the marketplace locally, run `/mae:init` on a throwaway
-TS repo (both branches: empty dir and existing codebase), walk one feature through
-`feature-start` → `feature-finish`.
+Manual acceptance: install the marketplace locally **plus superpowers**, run
+`/mae:init` on a throwaway TS repo (both branches: empty dir and existing codebase),
+walk one feature through `feature-start` → `feature-finish`, confirm superpowers
+skills fire inside mae stages and not as entry points.
 
 ## 8. Out of scope (v1)
 
@@ -273,6 +308,8 @@ TS repo (both branches: empty dir and existing codebase), walk one feature throu
 - Content changes to knowledge skills (prisma/stripe/shadcn/magic-ui/better-auth) — they move verbatim.
 - Auto-update push mechanics beyond `/plugin update`.
 - Framework presets beyond the v1 shortlist (Next.js, NestJS, Node/TS lib, Laravel).
+- Pinning the superpowers version (Claude Code has no version-pin mechanism; compat
+  tracking in §4 is the mitigation).
 
 ## 9. Migration & cleanup
 
@@ -280,26 +317,32 @@ TS repo (both branches: empty dir and existing codebase), walk one feature throu
   moves to plugin layout; keep a minimal `.claude/settings.json` for developing the plugin
   itself.
 - Delete root `CONSTITUTION.template.md`; its content becomes `templates/docs/constitution.md`.
-- Rename all `project-explore` references to `explore`; all internal command references
+- Rename all `project-explore` references to `explore`; all internal skill references
   use the namespaced spelling (`/mae:feature-start`, …).
-- Remove `.idea/`, `.DS_Store` (ensure gitignore).
 - Delete removed agent files (`architect`, `devils-advocate`, `codebase-explorer`,
   `implementer`); fold the devils-advocate phase into `spec-analyst`; move
   `e2e-planner` / `e2e-runner` into `templates/agents/`.
+- Remove `.idea/`, `.DS_Store` (ensure gitignore).
 - Rewrite `README.md` as the colleague-facing install/usage guide; move the "skeleton"
-  narrative into `docs/` of the plugin. State explicitly: **mae replaces superpowers —
-  do not install both**, two SessionStart doctrines would conflict.
+  narrative into `docs/` of the plugin. State explicitly: **superpowers is a required
+  companion plugin** — mae will not run without it; `/mae:init` checks and guides the
+  install.
 - `CLAUDE.md`/`AGENTS.md` at repo root describe developing the plugin, not using it.
 
 ## Risks
 
+- **Doctrine competition:** superpowers' SessionStart + `brainstorming` claim the same
+  entry point as `feature-start`. Mitigated by the entry-point precedence rule in
+  `using-mae` and the scaffolded `AGENTS.md` (upstream yields to project instructions
+  by its own design). Verified in manual acceptance (§7).
+- **Upstream drift:** obra may rename or restructure skills; no version pinning exists.
+  Mitigated by `docs/superpowers-compat.md` + the CI compat check (§7.6) — a rename is
+  a one-file fix, not a silent break.
 - **Namespaced skills** (`/mae:feature-start`) differ from the old docs' `/feature-start`
   spelling — all internal references must use the namespaced form (checked by
-  `check-plugin.mjs` §7.5).
+  `check-plugin.mjs`).
 - **Rules loading:** path-scoped rules are a project-file mechanism, hence scaffolding —
   the plugin cannot carry them; this is by design, and `/mae:init` re-run keeps them fresh.
 - **Official generators need network/tooling** (`create-next-app`, `composer`) — the
   new-project branch must check tool availability first and fall back to the
   free-description path when a generator is unavailable.
-- **Vendored drift:** upstream superpowers evolves; provenance lines + a `docs/UPSTREAM.md`
-  note recording the vendored version make re-syncs tractable.
