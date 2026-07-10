@@ -37,25 +37,25 @@ mae/
 │   ├── feature-start/        # cleaned of @maeton / app.config.ts refs
 │   ├── feature-finish/
 │   ├── fix/
-│   ├── using-sdd/            # meta-skill, injected at SessionStart (see §4)
-│   ├── writing-plans/        # ┐
-│   ├── executing-plans/      # │
-│   ├── test-driven-development/          # │ vendored from obra/superpowers,
-│   ├── systematic-debugging/             # │ adapted to SDD terminology
-│   ├── verification-before-completion/   # │ (see §4)
-│   ├── requesting-code-review/           # │
-│   ├── receiving-code-review/            # │
-│   ├── using-git-worktrees/              # │
-│   ├── dispatching-parallel-agents/      # │
-│   ├── subagent-driven-development/      # │
-│   ├── writing-skills/                   # ┘ (maintainers only)
+│   ├── using-mae/            # meta-skill, injected at SessionStart (see §4)
+│   ├── plan-writing/         # ┐
+│   ├── plan-execution/       # │
+│   ├── test-first/           # │ process skills — ideas adapted from
+│   ├── root-cause-debugging/ # │ obra/superpowers, renamed & rewritten
+│   ├── verify-before-done/   # │ in mae terminology (see §4)
+│   ├── review-request/       # │
+│   ├── review-response/      # │
+│   ├── workspace-isolation/  # │
+│   ├── parallel-agents/      # │
+│   ├── subagent-orchestration/           # │
+│   ├── skill-authoring/                  # ┘ (maintainers only)
 │   └── <knowledge skills>    # prisma-*, stripe-*, shadcn, magic-ui, better-auth — moved as-is
 ├── agents/                   # the 9 subagents, cleaned of stack leftovers
 ├── hooks/
-│   ├── hooks.json            # PreToolUse guard · PostToolUse format · SessionStart using-sdd
+│   ├── hooks.json            # PreToolUse guard · PostToolUse format · SessionStart using-mae
 │   ├── guard.sh              # blocks rm -rf, force-push, reset --hard, protected paths
 │   ├── format.sh
-│   └── session-start.sh      # prints skills/using-sdd/SKILL.md content as context
+│   └── session-start.sh      # prints skills/using-mae/SKILL.md content as context
 ├── templates/                # everything /mae:init scaffolds INTO a user project
 │   ├── AGENTS.md
 │   ├── rules/
@@ -88,8 +88,8 @@ command wrappers — the skill file is the single artifact.
 | `/mae:init` | **NEW.** Questionnaire-driven bootstrap — see §3.1. |
 | `/mae:explore` | renamed from `project-explore`: survey → `docs/PROJECT.md` + `docs/architecture-map.md` |
 | `/mae:feature-start` | unchanged flow; spec-authoring step absorbs superpowers' brainstorming dialogue (one question at a time before Plan Mode) |
-| `/mae:feature-finish` | unchanged flow; gains `verification-before-completion` gate |
-| `/mae:fix` | unchanged flow; built on `systematic-debugging` (root cause before fix) |
+| `/mae:feature-finish` | unchanged flow; gains the `verify-before-done` gate |
+| `/mae:fix` | unchanged flow; built on `root-cause-debugging` (root cause before fix) |
 
 Push / PR remain human-only.
 
@@ -137,32 +137,30 @@ project state:
 - Ends by suggesting `/mae:explore` (skippable if the analysis already produced
   `docs/PROJECT.md` in the existing-project branch).
 
-## 4. Superpowers integration (vendored, MIT + attribution)
+## 4. Process skills (ideas adapted from superpowers, renamed & rewritten)
 
-Every vendored file keeps a provenance line in frontmatter
-(`origin: obra/superpowers@<version>, adapted`) and the repo carries the upstream MIT
-license notice.
+The mae plugin must **not read as a superpowers derivative**: every process skill gets
+its own mae-native name and is rewritten in mae terminology, while keeping the proven
+mechanics. Attribution lives in exactly one place — `docs/UPSTREAM.md` plus the upstream
+MIT notice (legal minimum) — **not** in skill files, names, or frontmatter.
 
 **Adaptation, not copying.** Terminology is rewritten to this pipeline: specs in
 `specs/<feature>/spec.md`, DoD, `docs/constitution.md`, the 9-subagent roster.
 Overlapping mechanics are merged, not duplicated:
 
-- `using-superpowers` → **`using-sdd`**: the SessionStart-injected meta-skill — the core
-  mechanism that makes superpowers work. Establishes skill-first discipline ("1% chance a
-  skill applies → invoke it"), the red-flags anti-rationalization table, the 5-skill
-  surface, and the two-documents concept (constitution vs PROJECT).
-- `brainstorming` → folded into `feature-start` step 1 (spec authoring). No standalone
-  brainstorming skill: the spec IS the design artifact.
-- `writing-plans` / `executing-plans` → back `feature-start`'s Plan Mode phase and the
-  `implementer` agent's execution loop.
-- `test-driven-development` → binding rule for `implementer`.
-- `systematic-debugging` → the heart of `/mae:fix`.
-- `verification-before-completion` → gate inside `feature-finish` (evidence before claims).
-- `requesting-code-review` / `receiving-code-review` → `feature-finish` review loop and
-  reaction to `code-reviewer` findings.
-- `using-git-worktrees`, `dispatching-parallel-agents`, `subagent-driven-development` →
-  orchestration guidance referenced by `feature-start` / `implementer`.
-- `writing-skills` → kept for plugin maintainers (evolving the plugin itself).
+| mae skill | Source idea | Role in the pipeline |
+|---|---|---|
+| **`using-mae`** | `using-superpowers` | SessionStart-injected meta-skill — the core mechanism. Skill-first discipline ("1% chance a skill applies → invoke it"), red-flags anti-rationalization table, the 5-skill surface, the two-documents concept (constitution vs PROJECT). |
+| — | `brainstorming` | folded into `feature-start` step 1 (spec authoring, one question at a time). No standalone skill: the spec IS the design artifact. |
+| **`plan-writing`** / **`plan-execution`** | `writing-plans` / `executing-plans` | back `feature-start`'s Plan Mode phase and the `implementer` agent's execution loop |
+| **`test-first`** | `test-driven-development` | binding rule for `implementer` (red → green → refactor) |
+| **`root-cause-debugging`** | `systematic-debugging` | the heart of `/mae:fix` — phases, root cause before any fix |
+| **`verify-before-done`** | `verification-before-completion` | gate inside `feature-finish` — evidence before claims |
+| **`review-request`** / **`review-response`** | `requesting-` / `receiving-code-review` | `feature-finish` review loop and reaction to `code-reviewer` findings |
+| **`workspace-isolation`** | `using-git-worktrees` | isolated workspaces for feature work |
+| **`parallel-agents`** | `dispatching-parallel-agents` | fan-out for independent tasks |
+| **`subagent-orchestration`** | `subagent-driven-development` | executing plans through subagents |
+| **`skill-authoring`** | `writing-skills` | for plugin maintainers (evolving the plugin itself) |
 
 **Format patterns adopted from superpowers:** frontmatter descriptions with explicit
 "Use when…" triggers, checklists that become todos, red-flag tables, the cross-platform
@@ -177,7 +175,7 @@ Overlapping mechanics are merged, not duplicated:
   secrets). Must degrade gracefully (no-op checks) in projects not yet scaffolded.
 - **PostToolUse (Edit|Write):** `format.sh` — formats touched files; detects available
   formatter per stack, exits 0 silently when none.
-- **SessionStart:** injects `using-sdd` skill content (superpowers pattern).
+- **SessionStart:** injects `using-mae` skill content (session-start context pattern).
 
 Project-side `settings.json` (scaffolded) carries **permissions only**: deny on
 `.env*`/secrets/`docs/constitution.md`/`.claude/**`, ask on `git push`/`gh pr create`/
@@ -205,7 +203,8 @@ A CI script in the plugin repo (`scripts/check-plugin.mjs`, Node built-ins only)
 4. Smoke test: run the scaffold logic against a temp dir, then run
    `validate-workflow.mjs` there and assert it passes on a fresh scaffold.
 5. Internal link check across plugin Markdown (no references to removed paths —
-   `CONSTITUTION.md` at root, `commands/`, `project-explore`).
+   `CONSTITUTION.md` at root, `commands/`, `project-explore`, and no superpowers skill
+   names — `systematic-debugging`, `writing-plans`, etc. — outside `docs/UPSTREAM.md`).
 
 Manual acceptance: install the marketplace locally, run `/mae:init` on a throwaway
 TS repo (both branches: empty dir and existing codebase), walk one feature through
