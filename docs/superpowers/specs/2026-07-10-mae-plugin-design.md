@@ -139,6 +139,13 @@ project state:
   `.claude/agents/` **and** register the Playwright MCP server automatically (write the
   server entry into the project's `.mcp.json`). If no, neither the agents nor the MCP
   dependency ever appear in the project.
+- **Scaffold versioning:** every scaffold run stamps the plugin version into the
+  generated `AGENTS.md` (marker line). A re-run compares that stamp with the current
+  plugin version and offers a migration diff; the scaffolded validator warns when the
+  project's scaffold generation is older than the installed plugin.
+- **CI enforcement, not wishes:** the scaffold offers (opt-out) a CI check that runs
+  `validate-workflow.mjs` and verifies Conventional Commits (commitlint or PR-title
+  check — sufficient under squash-merge). `git.md` documents the convention; CI holds it.
 - Idempotent: on re-run, diff existing files and update only what the user approves.
 - Ends by suggesting `/mae:explore` (skippable if the analysis already produced
   `docs/PROJECT.md` in the existing-project branch).
@@ -171,7 +178,7 @@ Overlapping mechanics are merged, not duplicated:
 
 | mae skill | Source idea | Role in the pipeline |
 |---|---|---|
-| **`using-mae`** | `using-superpowers` | SessionStart-injected meta-skill — the core mechanism. Skill-first discipline ("1% chance a skill applies → invoke it"), red-flags anti-rationalization table, the 5-skill surface, the two-documents concept (constitution vs PROJECT). |
+| **`using-mae`** | `using-superpowers` | SessionStart-injected meta-skill — the core mechanism. Skill-first discipline ("1% chance a skill applies → invoke it"), red-flags anti-rationalization table, the 5-skill surface, the two-documents concept (constitution vs PROJECT), and the legitimacy of the trivial-change route (size routing is visible, not a secret). **Hard size budget: ≤ 60 lines** — it is paid on every session start; details live in the skills it points to. |
 | — | `brainstorming` | folded into `feature-start` step 1 (spec authoring, one question at a time). No standalone skill: the spec IS the design artifact. |
 | **`plan-writing`** / **`plan-execution`** | `writing-plans` / `executing-plans` | back `feature-start`'s Plan Mode phase and the unified execution doctrine (no implementer agent — §3.2) |
 | **`test-first`** | `test-driven-development` | binding rule for whoever implements — main context or dispatched subagent (red → green → refactor) |
@@ -215,7 +222,9 @@ Where it is enforced (written into each skill's text):
 
 ## 5. Hooks & safety
 
-`hooks/hooks.json` in the plugin wires:
+All hooks are invoked through a cross-platform `run-hook.cmd` wrapper (Windows without
+WSL included) — **in v1, not later**: a guard that silently doesn't run is worse than
+no guard. `hooks/hooks.json` in the plugin wires:
 
 - **PreToolUse (Bash):** `guard.sh` — deterministic block of `rm -rf`, force-push,
   `git reset --hard`, writes to protected paths (`docs/constitution.md`, `.env*`,
