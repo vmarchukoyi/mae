@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# PostToolUse formatter — auto-format a single TypeScript file after Edit/Write.
+#
+# Plugin-owned: invoked via hooks/run-hook.cmd from hooks/hooks.json (PostToolUse,
+# matcher "Edit|Write"). Reads the hook event JSON on stdin, pulls
+# tool_input.file_path, and — only for *.ts / *.tsx — runs Prettier then
+# ESLint --fix on that ONE file.
+#
+# Defensive by design: never fails the tool call. Missing tool, missing config,
+# or a lint error on the file all result in a soft note, exit 0. We do not block
+# on formatting; the real gate is `pnpm lint` in the test-runner.
+
+set -uo pipefail
+
+input="$(cat)"
+
+if command -v jq >/dev/null 2>&1; then
+  file="$(printf '%s' "$input" | jq -r '.tool_input.file_path // .tool_input.path // ""')"
+else
+  file="$(printf '%s' "$input" \
+    | sed -n 's/.*"file_path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' \
+    | head -1)"
+fi
+
+# Only TypeScript sources.
+case "$file" in
+  *.ts | *.tsx) ;;
+  *) exit 0 ;;
+esac
+
+# File must exist (Edit/Write may have targeted something transient).
+[ -f "$file" ] || exit 0
+
+root="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+cd "$root" 2>/dev/null || exit 0
+
+# Prettier — format the single file if a config resolves for it.
+if pnpm exec prettier --check "$file" >/dev/null 2>&1; then
+  : # already formatted
+else
+  pnpm exec prettier --write "$file" >/dev/null 2>&1 \
+    && echo "format: prettier --write $file" >&2
+fi
+
+# ESLint --fix — only if an ESLint config resolves; never block on lint errors.
+if pnpm exec eslint --print-config "$file" >/dev/null 2>&1; then
+  pnpm exec eslint --fix "$file" >/dev/null 2>&1 || true
+  echo "format: eslint --fix $file" >&2
+fi
+
+exit 0

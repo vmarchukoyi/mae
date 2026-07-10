@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# SessionStart hook for the mae plugin.
+#
+# Injects the using-mae skill as session context and, because mae depends on the
+# superpowers plugin, checks the plugin cache for superpowers and appends a
+# visible warning to the injected context when the dependency is missing.
+
+set -euo pipefail
+
+# Determine plugin root directory
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+# Read using-mae content
+using_mae_content=$(cat "${PLUGIN_ROOT}/skills/using-mae/SKILL.md" 2>&1 || echo "Error reading using-mae skill")
+
+# Dependency check: superpowers must be installed (plugin cache or plugins dir).
+superpowers_found=0
+for d in "${HOME}/.claude/plugins/cache"/*/superpowers "${HOME}/.claude/plugins"/*/superpowers; do
+  [ -d "$d" ] && superpowers_found=1 && break
+done
+warning=""
+if [ "$superpowers_found" -eq 0 ]; then
+  warning="\n\nWARNING: the superpowers plugin is NOT installed. mae depends on it. Install: /plugin install superpowers@claude-plugins-official"
+fi
+
+# Escape string for JSON embedding using bash parameter substitution.
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+}
+
+using_mae_escaped=$(escape_for_json "$using_mae_content")
+session_context="<MAE>\nThis project uses the mae spec-driven development workflow.\n\n**Below is the full content of your 'mae:using-mae' skill — the SDD workflow contract. For all other skills, use the 'Skill' tool:**\n\n${using_mae_escaped}${warning:-}\n</MAE>"
+
+# Output context injection as JSON.
+# Cursor hooks expect additional_context (snake_case).
+# Claude Code hooks expect hookSpecificOutput.additionalContext (nested).
+# Copilot CLI (v1.0.11+) and others expect additionalContext (top-level, SDK standard).
+#
+# Uses printf instead of heredoc to work around bash 5.3+ heredoc hang.
+if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
+  printf '{\n  "additional_context": "%s"\n}\n' "$session_context" | cat
+elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+  printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context" | cat
+else
+  printf '{\n  "additionalContext": "%s"\n}\n' "$session_context" | cat
+fi
+
+exit 0
