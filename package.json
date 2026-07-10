@@ -5,7 +5,6 @@
   "description": "Spec-driven development workflow for Claude Code.",
   "type": "module",
   "scripts": {
-    "validate:workflow": "node scripts/validate-workflow.mjs",
     "check:plugin": "node scripts/check-plugin.mjs"
   }
 }

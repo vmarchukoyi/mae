@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)", "Read(./.env.*)", "Edit(./.env)", "Edit(./.env.*)",
+      "Write(./.env)", "Write(./.env.*)", "Edit(./secrets/**)", "Write(./secrets/**)",
+      "Edit(./.claude/**)", "Write(./.claude/**)",
+      "Edit(./docs/constitution.md)", "Write(./docs/constitution.md)",
+      "Edit(./.github/workflows/**)", "Write(./.github/workflows/**)",
+      "Bash(git push --force:*)", "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)", "Bash(rm -rf:*)"
+    ],
+    "ask": [
+      "Bash(git push:*)", "Bash(gh pr create:*)", "Bash(gh pr merge:*)",
+      "Bash(git merge:*)", "Bash(curl:*)", "Bash(wget:*)",
+      "Bash(pnpm add:*)", "Bash(pnpm remove:*)", "Bash(composer require:*)"
+    ],
+    "allow": []
+  },
+  "enabledPlugins": {
+    "mae@otakoyi": true,
+    "superpowers@claude-plugins-official": true
+  }
+}
