@@ -50,7 +50,7 @@ mae/
 │   ├── subagent-orchestration/           # │
 │   ├── skill-authoring/                  # ┘ (maintainers only)
 │   └── <knowledge skills>    # prisma-*, stripe-*, shadcn, magic-ui, better-auth — moved as-is
-├── agents/                   # the 9 subagents, cleaned of stack leftovers
+├── agents/                   # 3 core subagents (see §3.2), cleaned of stack leftovers
 ├── hooks/
 │   ├── hooks.json            # PreToolUse guard · PostToolUse format · SessionStart using-mae
 │   ├── guard.sh              # blocks rm -rf, force-push, reset --hard, protected paths
@@ -63,6 +63,7 @@ mae/
 │   │   ├── typescript/       # current TS rules, cleaned + correct paths: globs
 │   │   └── php/              # minimal v1 skeleton, grows later
 │   ├── specs/                # README + _template/spec.md
+│   ├── agents/               # optional e2e-planner / e2e-runner (scaffolded on opt-in, §3.2)
 │   ├── docs/
 │   │   ├── constitution.md   # the engineering-law template (replaces root CONSTITUTION.template.md)
 │   │   ├── conventions/      # git.md (Conventional Commits v1.0.0), workflow.md, documentation.md
@@ -114,8 +115,8 @@ project state:
 3. Then continue with the common scaffold (below).
 
 **Existing-project branch:**
-1. Analyze the codebase (dispatch `codebase-explorer`): stack, layout, test/build
-   commands, existing docs.
+1. Analyze the codebase (dispatch the **built-in Explore agent** — mae ships no
+   recon agent of its own): stack, layout, test/build commands, existing docs.
 2. Embed what's missing, never overwrite what exists without showing a diff:
    documentation skeleton, rules, specs/, validator, permissions.
 3. Report what was found vs what was added.
@@ -133,9 +134,29 @@ project state:
   branch naming (`feat/<spec-name>`), squash-merge to `main`, push/PR human-only.
 - Scaffold `specs/`, `AGENTS.md`, `scripts/validate-workflow.mjs`; merge permissions
   into `.claude/settings.json`.
+- **E2E opt-in:** ask whether the project needs live e2e testing. If yes, scaffold
+  `e2e-planner` / `e2e-runner` from `templates/agents/` into the project's
+  `.claude/agents/` **and** register the Playwright MCP server automatically (write the
+  server entry into the project's `.mcp.json`). If no, neither the agents nor the MCP
+  dependency ever appear in the project.
 - Idempotent: on re-run, diff existing files and update only what the user approves.
 - Ends by suggesting `/mae:explore` (skippable if the analysis already produced
   `docs/PROJECT.md` in the existing-project branch).
+
+### 3.2 Agent roster (3 core + 2 optional)
+
+The migrated roster of 9 shrinks to avoid agent/skill conflicts:
+
+| Agent | Status | Rationale |
+|---|---|---|
+| `spec-analyst` | **kept, absorbs `devils-advocate`** | one pre-plan critic with two phases: reconcile spec vs constitution/code + adversarial attack in clean context. One dispatch instead of two. |
+| `code-reviewer` | **kept** | single source of review criteria; `review-request` / `review-response` skills orchestrate it and never duplicate the criteria. |
+| `test-runner` | **kept** | keeps noisy gate output (lint → typecheck → test → build) out of the main context; `verify-before-done` explicitly dispatches it — no second verification route. |
+| `architect` | **removed** | Plan Mode + `plan-writing` cover design; reintroduce only if a real ADR need emerges. |
+| `devils-advocate` | **merged** into `spec-analyst` | see above. |
+| `codebase-explorer` | **removed** | the built-in Explore agent does recon; skills reference it directly. |
+| `implementer` | **removed** | execution doctrine is unified in the skills: `plan-execution` (main-context execution with checkpoints) and `subagent-orchestration` (fresh general-purpose subagent per plan task). No named implementer — no competing doctrine. |
+| `e2e-planner` / `e2e-runner` | **optional** | live in `templates/agents/`, scaffolded into the project only when `/mae:init`'s e2e question is answered yes, together with automatic Playwright MCP registration (§3.1). Not part of the plugin's `agents/` — colleagues without Playwright never see broken agents. |
 
 ## 4. Process skills (ideas adapted from superpowers, renamed & rewritten)
 
@@ -145,21 +166,21 @@ mechanics. Attribution lives in exactly one place — `docs/UPSTREAM.md` plus th
 MIT notice (legal minimum) — **not** in skill files, names, or frontmatter.
 
 **Adaptation, not copying.** Terminology is rewritten to this pipeline: specs in
-`specs/<feature>/spec.md`, DoD, `docs/constitution.md`, the 9-subagent roster.
+`specs/<feature>/spec.md`, DoD, `docs/constitution.md`, the lean agent roster (§3.2).
 Overlapping mechanics are merged, not duplicated:
 
 | mae skill | Source idea | Role in the pipeline |
 |---|---|---|
 | **`using-mae`** | `using-superpowers` | SessionStart-injected meta-skill — the core mechanism. Skill-first discipline ("1% chance a skill applies → invoke it"), red-flags anti-rationalization table, the 5-skill surface, the two-documents concept (constitution vs PROJECT). |
 | — | `brainstorming` | folded into `feature-start` step 1 (spec authoring, one question at a time). No standalone skill: the spec IS the design artifact. |
-| **`plan-writing`** / **`plan-execution`** | `writing-plans` / `executing-plans` | back `feature-start`'s Plan Mode phase and the `implementer` agent's execution loop |
-| **`test-first`** | `test-driven-development` | binding rule for `implementer` (red → green → refactor) |
+| **`plan-writing`** / **`plan-execution`** | `writing-plans` / `executing-plans` | back `feature-start`'s Plan Mode phase and the unified execution doctrine (no implementer agent — §3.2) |
+| **`test-first`** | `test-driven-development` | binding rule for whoever implements — main context or dispatched subagent (red → green → refactor) |
 | **`root-cause-debugging`** | `systematic-debugging` | the heart of `/mae:fix` — phases, root cause before any fix |
 | **`verify-before-done`** | `verification-before-completion` | gate inside `feature-finish` — evidence before claims |
-| **`review-request`** / **`review-response`** | `requesting-` / `receiving-code-review` | `feature-finish` review loop and reaction to `code-reviewer` findings |
+| **`review-request`** / **`review-response`** | `requesting-` / `receiving-code-review` | `feature-finish` review loop; review criteria live only in the `code-reviewer` agent — the skills dispatch it and handle its findings |
 | **`workspace-isolation`** | `using-git-worktrees` | isolated workspaces for feature work |
 | **`parallel-agents`** | `dispatching-parallel-agents` | fan-out for independent tasks |
-| **`subagent-orchestration`** | `subagent-driven-development` | executing plans through subagents |
+| **`subagent-orchestration`** | `subagent-driven-development` | executing plan tasks through fresh general-purpose subagents (the unified doctrine, §3.2) |
 | **`skill-authoring`** | `writing-skills` | for plugin maintainers (evolving the plugin itself) |
 
 **Format patterns adopted from superpowers:** frontmatter descriptions with explicit
@@ -227,8 +248,12 @@ TS repo (both branches: empty dir and existing codebase), walk one feature throu
 - Rename all `project-explore` references to `explore`; all internal command references
   use the namespaced spelling (`/mae:feature-start`, …).
 - Remove `.idea/`, `.DS_Store` (ensure gitignore).
+- Delete removed agent files (`architect`, `devils-advocate`, `codebase-explorer`,
+  `implementer`); fold the devils-advocate phase into `spec-analyst`; move
+  `e2e-planner` / `e2e-runner` into `templates/agents/`.
 - Rewrite `README.md` as the colleague-facing install/usage guide; move the "skeleton"
-  narrative into `docs/` of the plugin.
+  narrative into `docs/` of the plugin. State explicitly: **mae replaces superpowers —
+  do not install both**, two SessionStart doctrines would conflict.
 - `CLAUDE.md`/`AGENTS.md` at repo root describe developing the plugin, not using it.
 
 ## Risks
