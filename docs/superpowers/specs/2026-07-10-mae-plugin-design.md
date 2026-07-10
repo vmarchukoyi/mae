@@ -187,6 +187,32 @@ Overlapping mechanics are merged, not duplicated:
 "Use when…" triggers, checklists that become todos, red-flag tables, the cross-platform
 `run-hook.cmd` wrapper for hooks.
 
+### 4.1 The interview doctrine (ask-when-uncertain) — cross-cutting
+
+A practice (inspired by mattpocock's "grilling" skill; noted in `docs/UPSTREAM.md`,
+no code vendored) baked into mae everywhere an agent faces a decision, not shipped
+as a separate skill:
+
+1. **Design decisions belong to the user.** When uncertain between viable options,
+   the agent asks — it never silently picks for the user.
+2. **One question at a time**, and every question carries the agent's **recommended
+   answer** with a one-line why.
+3. **Facts are researched, not asked.** Anything discoverable from the codebase/docs
+   is looked up; only genuine decisions reach the user.
+4. **No execution before shared understanding.** Work starts only after the open
+   decision tree is resolved and confirmed.
+
+Where it is enforced (written into each skill's text):
+- **`using-mae`** — states the doctrine as a session-wide rule ("when in doubt, ask;
+  one question; recommend an answer").
+- **`/mae:init`** — the questionnaire itself (§3.1) follows it.
+- **`feature-start`** — spec authoring walks every branch of the decision tree until
+  resolved before entering Plan Mode; `spec-analyst`'s surfaced questions feed this
+  interview rather than being dumped as a list.
+- **`plan-writing`** — a plan with an unresolved decision point is not presented as
+  final; the point is asked first.
+- **`fix`** — ambiguous reproduction or acceptance criterion → ask before touching code.
+
 ## 5. Hooks & safety
 
 `hooks/hooks.json` in the plugin wires:
