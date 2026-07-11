@@ -58,11 +58,19 @@ Install superpowers first:
 /plugin install superpowers@claude-plugins-official
 ```
 
-Then add this marketplace and install mae:
+**Local install** (a clone of this repo — for development or an unreleased build):
 
 ```
-/plugin marketplace add otakoyi/mae         # the marketplace repo (or a local path)
-/plugin install mae@mae:claude-plugin
+git clone https://github.com/vmarchukoyi/mae.git
+cd mae
+```
+
+Then launch Claude Code **from the cloned directory** and point the marketplace at the
+current folder (relative path — no need to spell out an absolute one):
+
+```
+/plugin marketplace add .
+/plugin install mae@mae
 ```
 
 `/mae:init` scaffolds `.claude/settings.json` with **both** plugins enabled, so a colleague
@@ -160,9 +168,29 @@ Two hooks make the non-negotiables *guaranteed*, not merely documented:
 
 ## Updates
 
-New releases roll out via `/plugin update`. Scaffolded files carry a version marker;
-re-running `/mae:init` offers a per-file migration diff when the installed plugin is newer —
-it never silently overwrites your work.
+Refresh the marketplace catalog, then update the installed plugin — and **restart Claude
+Code**, since skills, agents, and hooks are only reloaded on a fresh session:
+
+```
+/plugin marketplace update mae
+/plugin update mae@mae
+```
+
+**Updating a local install** (marketplace added from a local clone): pull or edit the code
+first, then run the same two commands. The plugin is copied into Claude Code's cache keyed
+by version, so **bump `version` in `.claude-plugin/plugin.json`** for each change you want
+to pick up — otherwise the update may re-use the cached copy of the same version:
+
+```
+git pull                         # (or make your local edits)
+# in Claude Code:
+/plugin marketplace update mae
+/plugin update mae@mae
+# then fully quit and relaunch Claude Code
+```
+
+Scaffolded files carry a version marker; re-running `/mae:init` offers a per-file migration
+diff when the installed plugin is newer — it never silently overwrites your work.
 
 ## Contributing
 

@@ -1,5 +1,5 @@
 ---
-name: init
+name: mae:init
 description: Use once to bootstrap or adopt a project for the mae SDD workflow, then re-run only to refresh. Questionnaire-driven; detects new vs existing projects, scaffolds docs/constitution.md, the core rules, specs/, validator, permissions — then surveys the project into docs/PROJECT.md + docs/architecture-map.md (the two documents every later stage reads). On a re-run it skips existing scaffold files and incrementally re-surveys a stale map. Triggers on "init the project", "set up mae", "bootstrap sdd", "survey", "map the codebase", "refresh the map".
 disable-model-invocation: false
 allowed-tools: Read, Glob, Grep, Bash, Write, AskUserQuestion

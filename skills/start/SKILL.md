@@ -1,5 +1,5 @@
 ---
-name: start
+name: mae:start
 description: Use to begin a feature from a Markdown feature-spec (task description, idea, scenarios, definition of done) or a free-text task. Interviews the user to build the spec, persists it, cuts a task branch off an updated base, sizes and routes the work, orchestrates recon + spec analysis + clarifying questions, then drops into Plan Mode and persists the approved plan. Triggers on "start a feature", "new feature", "implement this spec", or a path under specs/.
 disable-model-invocation: false
 allowed-tools: Read, Glob, Grep, Bash, Write, AskUserQuestion

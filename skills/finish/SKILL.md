@@ -1,5 +1,5 @@
 ---
-name: finish
+name: mae:finish
 description: Use when a feature's implementation is complete and you want to review, run the quality gate, commit, and prepare a PR. Runs pre-PR review + checks, verifies each definition-of-done item against the diff, commits with a full task description, fills the PR template, then STOPS — push and PR creation happen only on explicit confirmation. Triggers on "finish the feature", "prepare a PR", "wrap up this change".
 disable-model-invocation: false
 allowed-tools: Read, Glob, Grep, Bash, Write, AskUserQuestion

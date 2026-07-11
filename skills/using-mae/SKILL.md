@@ -1,5 +1,5 @@
 ---
-name: using-mae
+name: mae:using-mae
 description: Use when starting any conversation in a mae project — establishes the SDD workflow, superpowers integration contract, and ask-when-uncertain doctrine.
 ---
 

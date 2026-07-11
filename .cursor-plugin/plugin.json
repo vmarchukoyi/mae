@@ -1,7 +1,7 @@
 {
   "name": "mae",
   "displayName": "mae",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "mae (Managed Agentic Engineering) for Cursor — a spec-driven, human-gated development workflow: init/start/finish/fix, project scaffolding, and self-maintaining docs.",
   "target": "cursor",
   "author": {

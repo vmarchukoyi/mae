@@ -1,6 +1,6 @@
 {
   "name": "mae",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "mae (Managed Agentic Engineering) for OpenAI Codex CLI — a spec-driven, human-gated development workflow: init/start/finish/fix, project scaffolding, and self-maintaining docs.",
   "target": "codex",
   "author": {

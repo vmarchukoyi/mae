@@ -1,5 +1,5 @@
 ---
-name: fix
+name: mae:fix
 description: Use for a bug report (not a new feature) — reproduce it, trace the symptom back to the acceptance criterion it violates, lock it with a failing test, apply the smallest fix through the same quality gate, then patch the spec and record the fix. Works even on a repo with no spec for the affected area. Triggers on "fix this bug", "regression", "this is broken", a bug report or stack trace.
 disable-model-invocation: false
 allowed-tools: Read, Glob, Grep, Bash, Write, Edit, AskUserQuestion
