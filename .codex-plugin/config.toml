@@ -1,0 +1,23 @@
+# mae — Codex CLI config sample. Merge the keys you want into ~/.codex/config.toml.
+#
+# Guard equivalent. Codex cannot block an individual shell command the way Claude Code's
+# PreToolUse guard does. The honest best-effort is to require approval for commands, so a
+# human sees anything that touches the protected surface before it runs.
+#
+# Protected surface — deny by policy, review before running:
+#   git push --force / -f / --force-with-lease
+#   git reset --hard
+#   rm -rf / rm -fr
+#   any write (redirection, tee, sed -i, mv, cp, rm) to:
+#     .env*, secrets/, .github/workflows/, docs/constitution.md
+#
+# approval_policy options: "untrusted" | "on-request" | "on-failure" | "never".
+# "on-request" makes the agent ask before running commands it judges risky.
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+# Optional: Playwright MCP for e2e (parity with the Claude plugin's e2e agents).
+# Uncomment to enable.
+# [mcp_servers.playwright]
+# command = "npx"
+# args = ["-y", "@playwright/mcp@latest"]

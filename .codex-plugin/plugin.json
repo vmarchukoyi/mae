@@ -1,0 +1,20 @@
+{
+  "name": "mae",
+  "description": "mae (Managed Agentic Engineering) for OpenAI Codex CLI — spec-driven, human-gated init/start/finish/fix as native prompts. Metadata + gate anchor only; install by copying prompts/ and AGENTS.md (see README).",
+  "version": "0.1.0",
+  "target": "codex",
+  "author": {
+    "name": "Vlad Marchuk",
+    "email": "vlad.marchuk@otakoyi.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "managed-agentic-engineering",
+    "spec-driven",
+    "sdd",
+    "workflow",
+    "agentic",
+    "codex",
+    "scaffolding"
+  ]
+}
