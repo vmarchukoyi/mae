@@ -1,0 +1,20 @@
+{
+  "name": "mae",
+  "description": "mae (Managed Agentic Engineering) for Cursor — spec-driven, human-gated init/start/finish/fix as native commands + an always-on rule. Metadata + gate anchor only; install by copying rules/, commands/, hooks.json into .cursor/ (see README).",
+  "version": "0.1.0",
+  "target": "cursor",
+  "author": {
+    "name": "Vlad Marchuk",
+    "email": "vlad.marchuk@otakoyi.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "managed-agentic-engineering",
+    "spec-driven",
+    "sdd",
+    "workflow",
+    "agentic",
+    "cursor",
+    "scaffolding"
+  ]
+}
