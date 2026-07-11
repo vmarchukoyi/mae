@@ -1,12 +1,15 @@
 {
   "name": "mae",
-  "description": "mae (Managed Agentic Engineering) for OpenAI Codex CLI — spec-driven, human-gated init/start/finish/fix as native prompts. Metadata + gate anchor only; install by copying prompts/ and AGENTS.md (see README).",
   "version": "0.1.0",
+  "description": "mae (Managed Agentic Engineering) for OpenAI Codex CLI — a spec-driven, human-gated development workflow: init/start/finish/fix, project scaffolding, and self-maintaining docs.",
   "target": "codex",
   "author": {
     "name": "Vlad Marchuk",
-    "email": "vlad.marchuk@otakoyi.com"
+    "email": "vlad.marchuk@otakoyi.com",
+    "url": "https://github.com/vmarchukoyi"
   },
+  "homepage": "https://github.com/vmarchukoyi/mae",
+  "repository": "https://github.com/vmarchukoyi/mae",
   "license": "MIT",
   "keywords": [
     "managed-agentic-engineering",
@@ -16,5 +19,26 @@
     "agentic",
     "codex",
     "scaffolding"
-  ]
+  ],
+  "skills": "./skills/",
+  "hooks": {},
+  "interface": {
+    "displayName": "mae",
+    "shortDescription": "Spec-driven, human-gated init/start/finish/fix workflow for coding agents",
+    "longDescription": "Use mae to drive feature and bug work through a spec-driven, human-gated workflow: bootstrap or adopt a project, start a feature (interview → spec → plan), finish it (review → quality gate → PR), and fix bugs (reproduce → failing test → smallest fix).",
+    "developerName": "Vlad Marchuk",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "I've got a feature I'd like to build.",
+      "Let's set up this project with mae."
+    ],
+    "websiteURL": "https://github.com/vmarchukoyi/mae",
+    "brandColor": "#4F46E5",
+    "screenshots": []
+  }
 }
