@@ -7,7 +7,7 @@ allowed-tools: Read, Glob, Grep, Bash, Write, Edit, AskUserQuestion
 
 # Fix — the bug entrance to the workflow
 
-`/mae:feature-start` is for new capability. `/mae:fix` is for "it's broken." A bug is
+`/mae:start` is for new capability. `/mae:fix` is for "it's broken." A bug is
 not a feature; it gets its own thin loop that ends at a failing-test-turned-green plus
 a record of what went wrong, so the same class of bug does not return.
 
@@ -63,11 +63,11 @@ missing import).
 
 - Apply the **minimal** change that turns the test green. No drive-by refactors, no
   scope creep — this is a fix, not a redesign. If the real fix is large or structural,
-  stop and escalate to `/mae:feature-start` (it needs a plan and review, not a patch).
+  stop and escalate to `/mae:start` (it needs a plan and review, not a patch).
 - Enforce `docs/constitution.md` hard rules in the fix (Zod at boundaries, no
   untyped escape hatches, schema separation, reversible migration if the fix touches
   schema).
-- Run the same gate as `/mae:feature-finish` (dispatch the `test-runner` agent):
+- Run the same gate as `/mae:finish` (dispatch the `test-runner` agent):
   `pnpm lint → pnpm typecheck → pnpm test → pnpm build`. Green including the new test.
 - Never weaken, skip, or delete a test to make the gate pass.
 
@@ -103,7 +103,7 @@ Proposed commit: fix: <symptom in one line>
 Gate is green. To review + PR this fix:
 `/clear`
 ```
-/mae:feature-finish
+/mae:finish
 ```
 ```
 
@@ -113,10 +113,10 @@ Gate is green. To review + PR this fix:
   ambiguous, ask first — one question at a time, with a recommended answer.
 - Diagnose with `superpowers:systematic-debugging`; lock with a failing test via
   `superpowers:test-driven-development` before fixing. No exceptions.
-- Smallest change that turns the test green — escalate to `/mae:feature-start` if it
+- Smallest change that turns the test green — escalate to `/mae:start` if it
   isn't small.
 - Same quality gate as a feature — a fix is not exempt.
 - Never weaken a test to pass. The spec and the docs get patched by the same loop —
   they do not drift.
-- Push / PR are still human-only (see `/mae:feature-finish`). This skill stops at
+- Push / PR are still human-only (see `/mae:finish`). This skill stops at
   green.

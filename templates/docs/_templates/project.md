@@ -1,5 +1,5 @@
 <!--
-PROJECT.md TEMPLATE — copy to docs/PROJECT.md, generated/refreshed by /mae:explore.
+PROJECT.md TEMPLATE — copy to docs/PROJECT.md, generated/refreshed by /mae:init.
 This is the BUSINESS context, not the engineering rules. It answers "what are we
 building and why" so an agent keeps the goal in view and does not hallucinate one.
   - docs/constitution.md = engineering non-negotiables (stack, hard rules). Different doc.

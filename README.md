@@ -1,7 +1,7 @@
 # mae
 
 **mae** is a Claude Code plugin for **spec-driven development**. It gives a team one small
-skill surface — `init`, `explore`, `feature-start`, `feature-finish`, `fix` — that carries
+skill surface — `init`, `start`, `finish`, `fix` — that carries
 a feature from spec to plan to implementation to PR, and it scaffolds and maintains the
 project's documentation as part of the pipeline. Install it once; everyone on the project
 gets the same workflow.
@@ -32,24 +32,21 @@ opening the project gets both automatically.
 
 ## Quickstart
 
-1. `/mae:init` — answer the interview (project state, stack, constitution, e2e/CI opt-ins).
-2. `/mae:explore` — generate `docs/PROJECT.md` + `docs/architecture-map.md`.
-3. `/mae:feature-start` — author a spec, plan it, implement it.
-4. `/mae:feature-finish` — review, gate, DoD-vs-diff, docs, draft the PR (then it STOPS —
+1. `/mae:init` — answer the interview (project state, stack, constitution, e2e/CI opt-ins),
+   then it scaffolds the SDD layer **and** surveys the project into `docs/PROJECT.md` +
+   `docs/architecture-map.md`. Run once; re-run only to refresh.
+2. `/mae:start` — author a spec, plan it, implement it.
+3. `/mae:finish` — review, gate, DoD-vs-diff, docs, draft the PR (then it STOPS —
    push and PR are human-only).
 
-## The five skills
+## The four skills
 
 | Skill | Role |
 |---|---|
-| `/mae:init` | Bootstrap or adopt a project (questionnaire): constitution, rules preset, specs, validator, permissions. |
-| `/mae:explore` | Survey the codebase → `docs/PROJECT.md` + `docs/architecture-map.md` (stamped with the commit). |
-| `/mae:feature-start` | Spec interview → recon → `spec-analyst` → Plan Mode → `specs/<feature>/plan.md`. |
-| `/mae:feature-finish` | Review loop → verification gate → test gate → DoD vs diff → docs → drafts a PR, then STOPS. |
+| `/mae:init` | Bootstrap or adopt a project (questionnaire): constitution, core rules, specs, validator, permissions — **then** survey the codebase → `docs/PROJECT.md` + `docs/architecture-map.md` (stamped with the commit). One-time; re-run to refresh. |
+| `/mae:start` | Spec interview → recon → `spec-analyst` → Plan Mode → `specs/<feature>/plan.md`. |
+| `/mae:finish` | Review loop → verification gate → test gate → DoD vs diff → docs → drafts a PR, then STOPS. |
 | `/mae:fix` | Reproduce → failing test → smallest fix → same gate → record. |
-
-Beyond the five workflow skills, mae bundles knowledge skills (Prisma, Stripe, shadcn,
-Magic UI, Better Auth) that load on demand.
 
 ## Agents (and their cost)
 

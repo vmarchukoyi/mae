@@ -4,11 +4,11 @@
 // built-ins only (stack lock: no runtime deps).
 //
 // Usage:
-//   node scripts/scaffold.mjs --target <dir> [--preset typescript|php|none] [--e2e] [--ci]
+//   node scripts/scaffold.mjs --target <dir> [--e2e] [--ci]
 //
 // Behavior:
 //   - Copies templates/{docs,specs,scripts} → <target>/ (skip existing files).
-//   - Copies templates/rules/_core + the chosen preset → <target>/.claude/rules/.
+//   - Copies templates/rules/* (the always-on core rules) → <target>/.claude/rules/.
 //   - Copies templates/AGENTS.md → <target>/AGENTS.md (skip if present).
 //   - Deep-merges templates/settings.json into <target>/.claude/settings.json
 //     (never removes existing permission entries or plugin enablements).
@@ -34,14 +34,8 @@ const opt = (name, def) => {
   return i !== -1 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : def;
 };
 const target = resolve(opt('--target', '.'));
-const preset = opt('--preset', 'none'); // typescript | php | none
 const withE2e = flag('--e2e');
 const withCi = flag('--ci');
-
-if (!['typescript', 'php', 'none'].includes(preset)) {
-  console.error(`scaffold: unknown --preset "${preset}" (expected typescript | php | none)`);
-  process.exit(1);
-}
 
 const VERSION = JSON.parse(
   readFileSync(join(ROOT, '.claude-plugin/plugin.json'), 'utf8'),
@@ -87,11 +81,6 @@ function mergeSettings() {
   const src = JSON.parse(stamp(readFileSync(join(TEMPLATES, 'settings.json'), 'utf8')));
   src.permissions = src.permissions || { deny: [], ask: [], allow: [] };
   src.permissions.allow = src.permissions.allow || [];
-  if (preset === 'typescript') {
-    uniqPush(src.permissions.allow, [
-      'Bash(pnpm lint:*)', 'Bash(pnpm typecheck:*)', 'Bash(pnpm test:*)',
-    ]);
-  }
   const destPath = join(target, '.claude', 'settings.json');
   if (!existsSync(destPath)) {
     ensureDir(dirname(destPath));
@@ -131,10 +120,7 @@ for (const sub of ['docs', 'specs', 'scripts']) {
 }
 
 const rulesDest = join(target, '.claude', 'rules');
-copyDir(join(TEMPLATES, 'rules', '_core'), rulesDest);
-if (preset === 'typescript' || preset === 'php') {
-  copyDir(join(TEMPLATES, 'rules', preset), rulesDest);
-}
+copyDir(join(TEMPLATES, 'rules'), rulesDest);
 
 copyFile(join(TEMPLATES, 'AGENTS.md'), join(target, 'AGENTS.md'));
 mergeSettings();
@@ -150,7 +136,7 @@ if (withCi) {
 
 // --- report ----------------------------------------------------------------
 const rel = (p) => relative(target, p) || p;
-console.log(`mae scaffold v${VERSION} → ${target} (preset: ${preset}${withE2e ? ', e2e' : ''}${withCi ? ', ci' : ''})`);
+console.log(`mae scaffold v${VERSION} → ${target}${withE2e ? ' (e2e)' : ''}${withCi ? ' (ci)' : ''}`);
 for (const f of created) console.log(`  create  ${rel(f)}`);
 for (const f of merged) console.log(`  merge   ${rel(f)}`);
 for (const f of skipped) console.log(`  skip    ${rel(f)} (exists)`);

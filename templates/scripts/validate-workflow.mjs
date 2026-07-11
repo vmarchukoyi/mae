@@ -138,7 +138,7 @@ function checkScaffoldVersion() {
 // --- 6. architecture-map staleness (warning only) -------------------------
 function checkMapFreshness() {
   const file = join(ROOT, 'docs/architecture-map.md');
-  if (!existsSync(file)) { warn(file, 'docs/architecture-map.md missing — run /mae:explore'); return; }
+  if (!existsSync(file)) { warn(file, 'docs/architecture-map.md missing — run /mae:init'); return; }
   const fm = parseFrontmatter(readFileSync(file, 'utf8'));
   const reflects = fm?.data?.reflects_commit;
   if (!reflects) { warn(file, 'no reflects_commit stamp'); return; }
@@ -149,7 +149,7 @@ function checkMapFreshness() {
   } catch { return; } // not a git checkout, or unknown commit — skip
   const surfaceTouched = changed.filter((p) => /^(apps|packages|modules)\//.test(p));
   if (surfaceTouched.length) {
-    warn(file, `${surfaceTouched.length} surface file(s) changed since ${reflects.slice(0, 7)} — run /mae:explore`);
+    warn(file, `${surfaceTouched.length} surface file(s) changed since ${reflects.slice(0, 7)} — run /mae:init`);
   }
 }
 

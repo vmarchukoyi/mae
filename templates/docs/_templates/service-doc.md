@@ -4,7 +4,7 @@ Contract (see ../conventions/documentation.md):
   - The mermaid diagram is FOR HUMANS — shape at a glance.
   - The "For the agent" prose is FOR AI — dense, literal, greppable facts.
   - Keep it SIMPLE and CURRENT. A stale doc is worse than none.
-  - /mae:feature-finish updates this file whenever a feature changes the surface.
+  - /mae:finish updates this file whenever a feature changes the surface.
 Delete this comment block in real docs.
 -->
 

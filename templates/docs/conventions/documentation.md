@@ -8,13 +8,13 @@ How project knowledge is written and kept current so a future agent ramps fast.
 
 | Location | Holds | Lifetime |
 |---|---|---|
-| `docs/PROJECT.md` | Business context (idea, goals, roles, scenarios). Written by `/mae:explore`. | durable |
+| `docs/PROJECT.md` | Business context (idea, goals, roles, scenarios). Written by `/mae:init`. | durable |
 | `docs/constitution.md` | Engineering law (stack lock, hard rules, DoD). | durable |
-| `docs/architecture-map.md` | Structural map (surfaces, boundaries, machine commands). Written by `/mae:explore`. | durable |
+| `docs/architecture-map.md` | Structural map (surfaces, boundaries, machine commands). Written by `/mae:init`. | durable |
 | `docs/projects/<app>.md` | One doc per **app** in the repo | durable |
 | `docs/packages/<pkg>.md` | One doc per shared **package** | durable |
 | `docs/conventions/*.md` | Rules for agents (git, this contract, workflow) | durable |
-| `docs/features/<slug>.md` | Per-feature record written at `/mae:feature-finish` | durable |
+| `docs/features/<slug>.md` | Per-feature record written at `/mae:finish` | durable |
 | `specs/<feature>/spec.md` | Feature input (task/idea/DoD) | per-feature |
 
 Every doc names which surface it covers so an agent always knows *which project* it is in.
@@ -36,9 +36,9 @@ Copy `docs/_templates/service-doc.md` to start a new one.
 
 ## When docs get written/updated
 
-- **`/mae:feature-start`** reads the relevant `projects/`/`packages/` doc during recon,
+- **`/mae:start`** reads the relevant `projects/`/`packages/` doc during recon,
   so the plan is grounded in documented reality.
-- **`/mae:feature-finish`** (Document step) **must**, before the PR:
+- **`/mae:finish`** (Document step) **must**, before the PR:
   1. Update every service doc whose surface the change touched — prose facts **and** the
      mermaid if structure moved.
   2. Add a one-line entry to that doc's **Changelog** section.

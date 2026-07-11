@@ -1,5 +1,5 @@
 ---
-name: feature-finish
+name: finish
 description: Use when a feature's implementation is complete and you want to review, run the quality gate, commit, and prepare a PR. Runs pre-PR review + checks, verifies each definition-of-done item against the diff, commits with a full task description, fills the PR template, then STOPS — push and PR creation happen only on explicit confirmation. Triggers on "finish the feature", "prepare a PR", "wrap up this change".
 disable-model-invocation: false
 allowed-tools: Read, Glob, Grep, Bash, Write, AskUserQuestion
@@ -33,11 +33,11 @@ Read `specs/<feature>/spec.md` (definition of done) and `plan.md` first — they
    - Update every `docs/projects/<app>.md` / `docs/packages/<pkg>.md` whose surface changed: the **"For the agent"** facts, and the **mermaid** if structure moved.
    - Add a one-line entry to each touched doc's **Changelog**.
    - Write `docs/features/<slug>.md` — what shipped, why, surfaces touched, link to `specs/<slug>/spec.md`.
-   - New app/package/module → add its doc **and link it from `docs/README.md`** (no orphan docs). If structure moved, note whether `docs/architecture-map.md` needs a re-survey (`/mae:explore`).
+   - New app/package/module → add its doc **and link it from `docs/README.md`** (no orphan docs). If structure moved, note whether `docs/architecture-map.md` needs a re-survey (`/mae:init`).
    - **Flip the spec status** to `done` in `specs/<feature>/spec.md` frontmatter, and move the feature from **Now** to **Shipped** in `docs/roadmap.md` (with the PR link once it exists, or a placeholder to fill on push). The pipeline owns the roadmap — keep it true.
 
 6. **Commit (mandatory).** Stage the change (code **and** docs) and commit:
-   - **Conventional Commits** subject (`feat|fix|chore|docs|refactor|test|perf|ci|build: ...`, lowercase, no trailing period) — the squash-merge PR title must itself be a valid conventional commit, since it becomes the commit on `main` (`docs/conventions/git.md`).
+   - **Conventional Commits** subject (`feat|fix|chore|docs|refactor|test|perf|ci|build: ...`, lowercase, no trailing period) — the squash-merge PR title must itself be a valid conventional commit, since it becomes the commit on `main` (`.claude/rules/git.md`).
    - **Body = the full task description** from the spec (what + why, the DoD context), so the commit is self-explanatory.
    - **Author = the human only.** Do **not** add a `Co-Authored-By: Claude` (or any AI) trailer. The commit is attributed to the repo's git user, nothing else.
    - Never commit to `main` directly (branch protection + `docs/constitution.md`). Commit on the task branch.
@@ -49,7 +49,7 @@ Read `specs/<feature>/spec.md` (definition of done) and `plan.md` first — they
    - DoD as a checklist — each row checked only where step 4 proved it.
    - Constitution notes: any declared deviation + its decision record; changelog/semver note if a published package changed.
    - Test evidence: the gate result (+ coverage / e2e if run).
-   - PR **title** in Conventional Commits form — this is the string that becomes the squash-merge commit subject, so it must pass the same check as step 6 (`docs/conventions/git.md`).
+   - PR **title** in Conventional Commits form — this is the string that becomes the squash-merge commit subject, so it must pass the same check as step 6 (`.claude/rules/git.md`).
 
 9. **Verification before declaring done.** Before summarizing or drafting the PR as ready, invoke `superpowers:verification-before-completion` — evidence before claims. Every checked DoD item and every GREEN gate must trace to command output or a diff line already captured in steps 2 and 4, not to assumption.
 

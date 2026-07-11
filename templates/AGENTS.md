@@ -12,25 +12,24 @@ marker above — do not delete that line.
 - **`docs/constitution.md`** — engineering **law** (stack lock, hard rules, Definition of
   Done). Changes need senior review and a standalone PR.
 - **`docs/PROJECT.md`** — **business** context (idea, goals, roles, scenarios), generated
-  by `/mae:explore`.
+  by `/mae:init`.
 
 Never conflate them. Detailed, path-scoped rules live under `.claude/rules/`.
 
-## The workflow — five skills
+## The workflow — four skills
 
 | Skill | Role |
 |---|---|
-| `/mae:init` | Bootstrap or adopt this project for the mae workflow (questionnaire). |
-| `/mae:explore` | Survey the codebase → `docs/PROJECT.md` + `docs/architecture-map.md`. |
-| `/mae:feature-start` | Spec interview → recon → `spec-analyst` → Plan Mode → `specs/<feature>/plan.md`. |
-| `/mae:feature-finish` | Review → verification gate → test gate → DoD vs diff → docs → draft PR, then STOP. |
+| `/mae:init` | Bootstrap or adopt this project (questionnaire), **then** survey the codebase → `docs/PROJECT.md` + `docs/architecture-map.md`. One-time; re-run to refresh. |
+| `/mae:start` | Spec interview → recon → `spec-analyst` → Plan Mode → `specs/<feature>/plan.md`. |
+| `/mae:finish` | Review → verification gate → test gate → DoD vs diff → docs → draft PR, then STOP. |
 | `/mae:fix` | Reproduce → failing test → smallest fix → same gate → record. |
 
-Full narrative: `docs/conventions/workflow.md`. Git convention: `docs/conventions/git.md`.
+Full narrative: `docs/conventions/workflow.md`. Git convention: `.claude/rules/git.md`.
 
 ## Entry-point precedence (read this)
 
-> Feature and bug work in this project enters through `/mae:feature-start` and `/mae:fix`
+> Feature and bug work in this project enters through `/mae:start` and `/mae:fix`
 > only. Superpowers process skills run **inside** mae stages, never as alternative entry
 > points; if `superpowers:brainstorming` or `superpowers:writing-plans` would trigger on
 > feature work, route to the mae skill instead.
@@ -50,7 +49,7 @@ in `.claude/settings.json`.
 
 ## Surface layout
 
-<Fill in during /mae:explore — the apps, packages, and modules that make up this repo.>
+<Fill in during /mae:init — the apps, packages, and modules that make up this repo.>
 
 - Apps → `<apps/…>`
 - Packages → `<packages/…>`

@@ -1,6 +1,6 @@
 {
   "name": "mae",
-  "description": "Spec-driven development workflow for Claude Code: init/explore/feature-start/feature-finish/fix, project scaffolding, generated docs. Requires the superpowers plugin.",
+  "description": "Spec-driven development workflow for Claude Code: init/start/finish/fix, project scaffolding, generated docs. Requires the superpowers plugin.",
   "version": "0.1.0",
   "author": { "name": "Otakoyi Software" },
   "license": "MIT",

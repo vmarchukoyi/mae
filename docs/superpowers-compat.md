@@ -10,18 +10,18 @@ upstream rename surfaces as a one-file CI failure.
 
 | skill | used by | last verified against |
 |---|---|---|
-| `superpowers:writing-plans` | `feature-start` (planning) | superpowers 6.1.1 |
-| `superpowers:executing-plans` | `feature-start` (plan execution) | superpowers 6.1.1 |
-| `superpowers:subagent-driven-development` | `feature-start` (plan execution) | superpowers 6.1.1 |
-| `superpowers:dispatching-parallel-agents` | `feature-start` (parallel tasks) | superpowers 6.1.1 |
-| `superpowers:using-git-worktrees` | `feature-start` (workspace isolation) | superpowers 6.1.1 |
-| `superpowers:test-driven-development` | `feature-start`, `fix` (implementation) | superpowers 6.1.1 |
+| `superpowers:writing-plans` | `start` (planning) | superpowers 6.1.1 |
+| `superpowers:executing-plans` | `start` (plan execution) | superpowers 6.1.1 |
+| `superpowers:subagent-driven-development` | `start` (plan execution) | superpowers 6.1.1 |
+| `superpowers:dispatching-parallel-agents` | `start` (parallel tasks) | superpowers 6.1.1 |
+| `superpowers:using-git-worktrees` | `start` (workspace isolation) | superpowers 6.1.1 |
+| `superpowers:test-driven-development` | `start`, `fix` (implementation) | superpowers 6.1.1 |
 | `superpowers:systematic-debugging` | `fix` (diagnosis) | superpowers 6.1.1 |
-| `superpowers:verification-before-completion` | `feature-finish` (completion gate) | superpowers 6.1.1 |
-| `superpowers:requesting-code-review` | `feature-finish` (review loop) | superpowers 6.1.1 |
-| `superpowers:receiving-code-review` | `feature-finish` (review loop) | superpowers 6.1.1 |
+| `superpowers:verification-before-completion` | `finish` (completion gate) | superpowers 6.1.1 |
+| `superpowers:requesting-code-review` | `finish` (review loop) | superpowers 6.1.1 |
+| `superpowers:receiving-code-review` | `finish` (review loop) | superpowers 6.1.1 |
 | `superpowers:writing-skills` | plugin maintainers | superpowers 6.1.1 |
-| `superpowers:brainstorming` | `using-mae`, `feature-start` (referenced only to redirect away from it) | superpowers 6.1.1 |
+| `superpowers:brainstorming` | `using-mae`, `start` (referenced only to redirect away from it) | superpowers 6.1.1 |
 
 ## Notes
 

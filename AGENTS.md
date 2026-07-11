@@ -7,8 +7,8 @@ agents) working on the plugin itself. For using mae in a project, see `README.md
 
 ```
 .claude-plugin/         plugin.json (name "mae") + marketplace.json
-skills/                 the workflow skills (init, explore, feature-start,
-                        feature-finish, fix), using-mae, and knowledge skills
+skills/                 the workflow skills (init, start, finish, fix)
+                        and using-mae
 agents/                 the 3 core subagents (spec-analyst, code-reviewer, test-runner)
 hooks/                  hooks.json + run-hook.cmd wrapper + guard / format / session-start
 templates/              everything /mae:init scaffolds INTO a user project
@@ -31,5 +31,5 @@ scan, the superpowers-compat list, and the `using-mae` size budget.
 - **superpowers is a required dependency** — mae invokes `superpowers:*` skills by name.
   Every such name must be listed in `docs/superpowers-compat.md` (the gate enforces this).
 - No new runtime dependencies — scripts use Node built-ins only.
-- Once bootstrapped, this repo **dogfoods** its own workflow: use `/mae:feature-start` to
+- Once bootstrapped, this repo **dogfoods** its own workflow: use `/mae:start` to
   add a feature to the plugin.

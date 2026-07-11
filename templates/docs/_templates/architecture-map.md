@@ -1,6 +1,6 @@
 <!--
 architecture-map.md TEMPLATE — copy to docs/architecture-map.md, generated/refreshed
-by /mae:explore. This is the STRUCTURAL map: surfaces, boundaries, and the
+by /mae:init. This is the STRUCTURAL map: surfaces, boundaries, and the
 machine-readable commands every later stage reads. It is NOT the business context
 (that is docs/PROJECT.md) and NOT the hard rules (docs/constitution.md).
 
@@ -26,7 +26,7 @@ frontend: ""               # e.g. "next" — only with proof
 # Architecture map
 
 > Reflects commit `<sha>` (`surveyed_at`). Stale when
-> `git diff --name-only <sha>..HEAD` is non-empty — re-run `/mae:explore`.
+> `git diff --name-only <sha>..HEAD` is non-empty — re-run `/mae:init`.
 
 ## Surface inventory
 

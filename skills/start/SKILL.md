@@ -1,5 +1,5 @@
 ---
-name: feature-start
+name: start
 description: Use to begin a feature from a Markdown feature-spec (task description, idea, scenarios, definition of done) or a free-text task. Interviews the user to build the spec, persists it, cuts a task branch off an updated base, sizes and routes the work, orchestrates recon + spec analysis + clarifying questions, then drops into Plan Mode and persists the approved plan. Triggers on "start a feature", "new feature", "implement this spec", or a path under specs/.
 disable-model-invocation: false
 allowed-tools: Read, Glob, Grep, Bash, Write, AskUserQuestion
@@ -17,7 +17,7 @@ Depth is proportional to feature size (Step 3) — but a step is only ever skipp
 ## Steps
 
 1. **Locate & persist the spec.** The spec is the source of truth — it carries the
-   **definition of done** that `/mae:feature-finish` turns into the PR checklist.
+   **definition of done** that `/mae:finish` turns into the PR checklist.
    - Given a path (`specs/<feature>/spec.md`): read it. Confirm the four sections —
      **task description**, **idea**, **scenarios** (positive/negative), **definition of
      done** — and the frontmatter (`status`, `size`, `route`). If a required section is
@@ -48,7 +48,7 @@ Depth is proportional to feature size (Step 3) — but a step is only ever skipp
      worktree. Not the default.
 
 3. **Size & route (one question).** Read `.claude/sdd.local.md` first (per-developer
-   config — `default_route`, `artifact_language`; see `/mae:explore` for the keys).
+   config — `default_route`, `artifact_language`; see `/mae:init` for the keys).
    Ask **one** `AskUserQuestion` to set the depth, then write `size` + `route` into the
    spec frontmatter and flip `status` to `in-progress`.
    - **Size** — XS / S / M / L / XL, judged on four signals: expected number of PRs,
@@ -69,7 +69,7 @@ Depth is proportional to feature size (Step 3) — but a step is only ever skipp
 4. **Reconnaissance.** Dispatch the built-in **Explore** agent (read-only) with the spec
    + target surface. Ask it for a **delta analysis** with `path:line` citations — it
    reads the project's surface docs first (overview → `docs/projects/<app>.md` /
-   `docs/packages/<pkg>.md` → the system map produced by `/mae:explore`), then returns
+   `docs/packages/<pkg>.md` → the system map produced by `/mae:init`), then returns
    brownfield delta (what changes vs exists, blast radius, reuse) or greenfield
    structure. Wait for it.
 
@@ -106,7 +106,7 @@ Depth is proportional to feature size (Step 3) — but a step is only ever skipp
    `superpowers:test-driven-development`.
 
 9. **Promote on the roadmap.** Move this feature into **Now** in `docs/roadmap.md`
-   (linked to its spec). `/mae:feature-finish` moves it to **Shipped** later.
+   (linked to its spec). `/mae:finish` moves it to **Shipped** later.
 
 10. **Large task? Offer, don't impose.** Big/parallelizable plan → *offer*
     `superpowers:dispatching-parallel-agents` as an explicit choice. Default is the
@@ -129,7 +129,7 @@ Depth is proportional to feature size (Step 3) — but a step is only ever skipp
 Implement against the plan (`superpowers:subagent-driven-development` or
 `superpowers:executing-plans`). When code is done:
 ```
-/mae:feature-finish
+/mae:finish
 ```
 ```
 
@@ -143,4 +143,4 @@ Implement against the plan (`superpowers:subagent-driven-development` or
 - Never skip clarifying questions when the analyst raised blockers.
 - Depth follows the route; skips follow N/A conditions and are always announced.
 - This skill ends at an approved + persisted plan on a task branch. The PR is a separate
-  step (`/mae:feature-finish`).
+  step (`/mae:finish`).

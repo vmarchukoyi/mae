@@ -99,7 +99,7 @@ Mode: A (ambiguity) | B (failure modes) — <one line why>
 Verdict: plan-ready | clarify-first (<N blockers must be answered before Plan Mode>)
 ```
 
-The clarifying questions feed the feature-start interview one at a time — they are not dumped on the user as a list.
+The clarifying questions feed the start interview one at a time — they are not dumped on the user as a list.
 
 ## What you do not do
 

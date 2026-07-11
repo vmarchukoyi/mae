@@ -1,15 +1,15 @@
 <!--
 SPEC TEMPLATE — copy to specs/<feature-name>/spec.md (kebab-case folder = feature name).
-Authored during /mae:feature-start as the feature input; the skill then sets `size` /
-`route` and flips `status` to in-progress; /mae:feature-finish flips it to done. Keep
+Authored during /mae:start as the feature input; the skill then sets `size` /
+`route` and flips `status` to in-progress; /mae:finish flips it to done. Keep
 visual references beside this file under design/ and link them below.
 Delete this comment block in the real spec.
 -->
 
 ---
 status: draft        # draft | in-progress | done  (lifecycle, replaces an archive folder)
-size:                # XS | S | M | L | XL — set by /mae:feature-start, don't guess up front
-route:               # quick | standard | full — set by /mae:feature-start from size
+size:                # XS | S | M | L | XL — set by /mae:start, don't guess up front
+route:               # quick | standard | full — set by /mae:start from size
 ---
 
 # <Feature name>
@@ -49,7 +49,7 @@ No visuals for this feature → write "none".
 ## Definition of done
 
 A checklist of observable, testable conditions. Each becomes a PR checklist row in
-`/mae:feature-finish`, checked **only** when actually satisfied by the diff.
+`/mae:finish`, checked **only** when actually satisfied by the diff.
 
 - [ ] …
 - [ ] …

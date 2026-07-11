@@ -22,7 +22,7 @@ This project follows [Conventional Commits v1.0.0](https://www.conventionalcommi
 4. **Commit** in reviewable steps (format below).
 5. **Rebase, don't merge, to stay current:** `git fetch origin && git rebase origin/main`.
    Keeps history linear; `main` uses squash-merge so one branch → one commit on `main`.
-6. **PR** via `/mae:feature-finish` → review → CI green → one human approval → squash-merge.
+6. **PR** via `/mae:finish` → review → CI green → one human approval → squash-merge.
 
 ## Branch naming
 
@@ -43,7 +43,7 @@ Examples: `feat/org-invites`, `fix/auth-session-expiry`.
 
 - **Type:** one of `feat fix docs style refactor perf test build ci chore revert`.
 - **Subject:** lowercase, imperative, no trailing period, ≤ ~72 chars.
-- **Scope (optional):** the surface — `feat(api): …`, `fix(@your-org/db): …`.
+- **Scope (optional):** the surface — `feat(api): …`, `fix(db): …`.
 - **Breaking change:** append `!` after the type/scope (`feat(api)!: …`) **or** add a
   `BREAKING CHANGE: <description>` footer. A breaking change to a published package also
   needs a major bump + a migration note (constitution).
@@ -69,7 +69,7 @@ CI holds it.
 ## Push & PR — always human-confirmed
 
 `git push`, `gh pr create`, `gh pr merge`, and `git merge` are `ask`-gated. The agent
-never pushes or opens a PR on its own — `/mae:feature-finish` stops and asks. A green
+never pushes or opens a PR on its own — `/mae:finish` stops and asks. A green
 post-PR CI review does **not** replace the required human review.
 
 ## Keeping a branch current

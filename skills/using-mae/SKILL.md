@@ -9,7 +9,7 @@ description: Use when starting any conversation in a mae project — establishes
 
 ## Entry points
 
-Feature and bug work enters **only** through `/mae:feature-start` and `/mae:fix`. `/mae:init` bootstraps or adopts a project; `/mae:explore` surveys it; `/mae:feature-finish` reviews and closes. A trivial change takes the light route — size routing is legitimate, announced out loud, never smuggled.
+Feature and bug work enters **only** through `/mae:start` and `/mae:fix`. `/mae:init` bootstraps or adopts a project and surveys it (one-time; re-run to refresh the map); `/mae:finish` reviews and closes. A trivial change takes the light route — size routing is legitimate, announced out loud, never smuggled.
 
 ## Integration contract
 

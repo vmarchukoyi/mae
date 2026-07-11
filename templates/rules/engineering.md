@@ -20,11 +20,12 @@ behavior (not guidance) see the mae plugin's hooks and `.claude/settings.json`.
 
 - **Two documents, not one.** `docs/constitution.md` = engineering law; `docs/PROJECT.md` = business context. Never conflate them.
 - **Documentation is true by definition** — Markdown in the repo, maintained by the pipeline. No external wiki.
-- **The workflow is five skills:** `/mae:init`, `/mae:explore`, `/mae:feature-start`, `/mae:feature-finish`, `/mae:fix`. Full narrative: `docs/conventions/workflow.md`.
+- **The workflow is four skills:** `/mae:init`, `/mae:start`, `/mae:finish`, `/mae:fix`. Full narrative: `docs/conventions/workflow.md`.
 - **Depth is proportional to feature size** (size → route); skips bind to N/A conditions, always announced.
-- **Push / PR are human-only.** The agent prepares; a human presses (`docs/conventions/git.md`).
+- **Push / PR are human-only.** The agent prepares; a human presses (`.claude/rules/git.md`).
 
 ## Where the detail lives
 
-- Stack-specific rules → `.claude/rules/` (e.g. the `typescript` preset).
-- Git → `docs/conventions/git.md` · Workflow → `docs/conventions/workflow.md` · Docs → `docs/conventions/documentation.md`.
+- Git → `.claude/rules/git.md` (always-on, alongside this file and `testing.md`).
+- Workflow → `docs/conventions/workflow.md` · Docs → `docs/conventions/documentation.md`.
+- Stack-specific rules are the project's to add under `.claude/rules/` as it matures.

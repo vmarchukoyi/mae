@@ -178,7 +178,7 @@ function checkScaffoldSmoke() {
   let tmp;
   try {
     tmp = mkdtempSync(join(tmpdir(), 'mae-scaffold-'));
-    execFileSync('node', [scaffold, '--target', tmp, '--preset', 'typescript'], {
+    execFileSync('node', [scaffold, '--target', tmp], {
       stdio: 'pipe',
     });
     const scaffoldedValidator = join(tmp, 'scripts/validate-workflow.mjs');
