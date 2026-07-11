@@ -10,7 +10,7 @@ agents) working on the plugin itself. For using mae in a project, see `README.md
 skills/                 the workflow skills (init, start, finish, fix)
                         and using-mae
 agents/                 the 3 core subagents (spec-analyst, code-reviewer, test-runner)
-hooks/                  hooks.json + run-hook.cmd wrapper + guard / format / session-start
+hooks/                  hooks.json + run-hook.cmd wrapper + guard / session-start
 templates/              everything /mae:init scaffolds INTO a user project
                         (AGENTS.md, rules/, specs/, agents/, docs/, ci/, scripts/, settings.json)
 scripts/check-plugin.mjs   the CI gate for this repo
