@@ -53,11 +53,8 @@ flowchart TD
         I6 --> I7["Run scaffolder:<br/>scaffold.mjs --target ."]
         I7 --> I7q1{"E2E testing?"}
         I7q1 -- "Yes" --> I7e["+ --e2e (planner/runner + Playwright MCP)"]
-        I7q1 -- "No" --> I7q2
-        I7e --> I7q2{"CI enforcement?"}
-        I7q2 -- "Yes" --> I7c["+ --ci (mae-checks.yml)"]
-        I7q2 -- "No" --> I8
-        I7c --> I8
+        I7q1 -- "No" --> I8
+        I7e --> I8
 
         I8["Fill docs/constitution.md placeholders<br/>from the interview"]
         I8 --> I9["Survey → write docs/PROJECT.md<br/>(business context)"]

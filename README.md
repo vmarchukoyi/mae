@@ -128,7 +128,7 @@ exists (re-runs show a diff instead of overwriting):
 - **`specs/`** — the spec template and lifecycle; every feature starts as a spec.
 - **`scripts/validate-workflow.mjs`** — checks the project's artifacts, links, and freshness.
 - **`.claude/settings.json`** — permissions (deny/ask/allow) and both plugins enabled.
-- **Optional:** `--e2e` (Playwright planner/runner + MCP) and `--ci` (a GitHub Actions gate).
+- **Optional:** `--e2e` (Playwright planner/runner + MCP).
 
 ---
 

@@ -23,7 +23,7 @@ decisions are resolved. Deterministic file placement is delegated to the scaffol
 your job is to interview and to fill placeholders.
 
 The scaffolder is invoked as:
-`node "${CLAUDE_PLUGIN_ROOT}/scripts/scaffold.mjs" --target . [--e2e] [--ci]`
+`node "${CLAUDE_PLUGIN_ROOT}/scripts/scaffold.mjs" --target . [--e2e]`
 
 **Re-run to refresh, not to redo.** On a re-run the scaffolder skips existing files and
 the survey does an *incremental* re-survey of only the changed modules (Step 9). init is
@@ -143,11 +143,9 @@ stack-specific rules are the project's to add later. Run:
 node "${CLAUDE_PLUGIN_ROOT}/scripts/scaffold.mjs" --target .
 ```
 
-Ask (recommend yes, opt-out) two more questions, adding flags accordingly:
+Ask (recommend yes, opt-out) one more question, adding the flag accordingly:
 - **E2E testing?** → add `--e2e` (scaffolds `e2e-planner`/`e2e-runner` into `.claude/agents/`
   and registers the Playwright MCP server in `.mcp.json`).
-- **CI enforcement?** → add `--ci` (scaffolds `.github/workflows/mae-checks.yml` — runs the
-  validator and the Conventional-Commit PR-title check).
 
 Then fill the `docs/constitution.md` placeholders with the Step 6 answers.
 

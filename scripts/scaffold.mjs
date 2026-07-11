@@ -4,7 +4,7 @@
 // built-ins only (stack lock: no runtime deps).
 //
 // Usage:
-//   node scripts/scaffold.mjs --target <dir> [--e2e] [--ci]
+//   node scripts/scaffold.mjs --target <dir> [--e2e]
 //
 // Behavior:
 //   - Copies templates/{docs,specs,scripts} → <target>/ (skip existing files).
@@ -14,7 +14,6 @@
 //     (never removes existing permission entries or plugin enablements).
 //   - --e2e: copies templates/agents/* → <target>/.claude/agents/ and registers the
 //     Playwright MCP server in <target>/.mcp.json.
-//   - --ci: copies templates/ci/mae-checks.yml → <target>/.github/workflows/.
 //   - Stamps {{MAE_VERSION}} (from .claude-plugin/plugin.json) into every copied file.
 
 import {
@@ -35,7 +34,6 @@ const opt = (name, def) => {
 };
 const target = resolve(opt('--target', '.'));
 const withE2e = flag('--e2e');
-const withCi = flag('--ci');
 
 const VERSION = JSON.parse(
   readFileSync(join(ROOT, '.claude-plugin/plugin.json'), 'utf8'),
@@ -130,13 +128,9 @@ if (withE2e) {
   mergeMcp();
 }
 
-if (withCi) {
-  copyFile(join(TEMPLATES, 'ci', 'mae-checks.yml'), join(target, '.github', 'workflows', 'mae-checks.yml'));
-}
-
 // --- report ----------------------------------------------------------------
 const rel = (p) => relative(target, p) || p;
-console.log(`mae scaffold v${VERSION} → ${target}${withE2e ? ' (e2e)' : ''}${withCi ? ' (ci)' : ''}`);
+console.log(`mae scaffold v${VERSION} → ${target}${withE2e ? ' (e2e)' : ''}`);
 for (const f of created) console.log(`  create  ${rel(f)}`);
 for (const f of merged) console.log(`  merge   ${rel(f)}`);
 for (const f of skipped) console.log(`  skip    ${rel(f)} (exists)`);

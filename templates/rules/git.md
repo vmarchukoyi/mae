@@ -2,7 +2,7 @@
 
 The rules for touching version control in this project, for agents and humans. They are
 enforced by `docs/constitution.md`, branch protection, `.claude/settings.json` (deny/ask),
-the mae plugin's PreToolUse guard, and CI (see `mae-checks.yml`). When a rule here and
+and the mae plugin's PreToolUse guard. When a rule here and
 `docs/constitution.md` disagree, the constitution wins.
 
 This project follows [Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/v1.0.0/).
