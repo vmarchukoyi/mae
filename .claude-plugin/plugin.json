@@ -1,8 +1,19 @@
 {
   "name": "mae",
-  "description": "Spec-driven development workflow for Claude Code: init/start/finish/fix, project scaffolding, generated docs. Requires the superpowers plugin.",
+  "description": "mae (Managed Agentic Engineering) — a spec-driven, human-gated development workflow for Claude Code: init/start/finish/fix, project scaffolding, and self-maintaining docs. Requires the superpowers plugin.",
   "version": "0.1.0",
-  "author": { "name": "Otakoyi Software" },
+  "author": {
+    "name": "Vlad Marchuk",
+    "email": "vlad.marchuk@otakoyi.com"
+  },
   "license": "MIT",
-  "keywords": ["sdd", "workflow", "spec-driven", "scaffolding"]
+  "keywords": [
+    "managed-agentic-engineering",
+    "spec-driven",
+    "sdd",
+    "workflow",
+    "agentic",
+    "claude-code",
+    "scaffolding"
+  ]
 }

@@ -1,11 +1,14 @@
 {
-  "name": "otakoyi",
-  "owner": { "name": "Otakoyi Software" },
+  "name": "mae:claude-plugin",
+  "owner": {
+    "name": "Otakoyi",
+    "email": "vlad.marchuk@otakoyi.com"
+  },
   "plugins": [
     {
       "name": "mae",
       "source": "./",
-      "description": "Spec-driven development workflow. Requires superpowers@claude-plugins-official."
+      "description": "mae — Managed Agentic Engineering: a spec-driven, human-gated development workflow for Claude Code (init/start/finish/fix). Requires superpowers@claude-plugins-official."
     }
   ]
 }

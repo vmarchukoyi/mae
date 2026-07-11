@@ -61,8 +61,8 @@ Install superpowers first:
 Then add this marketplace and install mae:
 
 ```
-/plugin marketplace add otakoyi/mae      # or a local path to this repo
-/plugin install mae@otakoyi
+/plugin marketplace add otakoyi/mae         # the marketplace repo (or a local path)
+/plugin install mae@mae:claude-plugin
 ```
 
 `/mae:init` scaffolds `.claude/settings.json` with **both** plugins enabled, so a colleague
