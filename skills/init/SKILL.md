@@ -74,21 +74,7 @@ both halves (scaffold and survey).
 - **medium** — ask on anything that shapes the stack, the business framing, or a boundary.
 - **hard** — confirm each non-trivial call before writing it.
 
-Default **medium**. First read `.claude/sdd.local.md` for a saved default.
-
-**Per-developer config — `.claude/sdd.local.md`.** Local-only, gitignored,
-auto-created on first run with self-documenting defaults; degrade gracefully if it is
-absent or unwritable (fall back to the defaults, don't block). Keys:
-
-| Key | Default | Meaning |
-|---|---|---|
-| `interview_depth` | `medium` | easy (decide + list assumptions) / medium (ask on framing or a boundary) / hard (confirm each call) |
-| `default_route` | `auto` | `/mae:start` size→route mapping: `auto` (XS/S→quick, M→standard, L/XL→full) or a pinned route |
-| `artifact_language` | `uk` | language of generated **prose**; headings, code, and machine tokens (frontmatter, commit subjects, size/route) stay English always |
-| `auto_dispatch_subagents` | `true` | dispatch subagents automatically vs ask before each |
-
-When absent, create it with these defaults (via the Write tool — the `.claude/` path
-is guarded against Bash writes) and tell the user it was seeded.
+Default **medium**.
 
 ## Step 3 — Detect project state (new vs existing)
 

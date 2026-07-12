@@ -32,7 +32,7 @@ flowchart TD
         IRinc --> IHAND
         IRfull --> IHAND
 
-        I1 -- "No (fresh)" --> I2{"Depth dial?<br/>(reads .claude/sdd.local.md)"}
+        I1 -- "No (fresh)" --> I2{"Depth dial?"}
         I2 -- "easy" --> I3
         I2 -- "medium (default)" --> I3
         I2 -- "hard" --> I3

@@ -47,10 +47,8 @@ Depth is proportional to feature size (Step 3) — but a step is only ever skipp
      untouched (parallel work), invoke `superpowers:using-git-worktrees` for an isolated
      worktree. Not the default.
 
-3. **Size & route (one question).** Read `.claude/sdd.local.md` first (per-developer
-   config — `default_route`, `artifact_language`; see `/mae:init` for the keys).
-   Ask **one** `AskUserQuestion` to set the depth, then write `size` + `route` into the
-   spec frontmatter and flip `status` to `in-progress`.
+3. **Size & route (one question).** Ask **one** `AskUserQuestion` to set the depth, then
+   write `size` + `route` into the spec frontmatter and flip `status` to `in-progress`.
    - **Size** — XS / S / M / L / XL, judged on four signals: expected number of PRs,
      time-to-merge, new modules/APIs/migrations, breaking changes.
    - **Route** — `quick` / `standard` / `full`. Default mapping (offer, let the user
