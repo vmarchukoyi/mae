@@ -1,6 +1,6 @@
 ---
 name: mae:init
-description: Use once to bootstrap or adopt a project for the mae SDD workflow, then re-run only to refresh. Questionnaire-driven; detects new vs existing projects, scaffolds docs/constitution.md, the core rules, specs/, validator, permissions — then surveys the project into docs/PROJECT.md + docs/architecture-map.md (the two documents every later stage reads). On a re-run it skips existing scaffold files and incrementally re-surveys a stale map. Triggers on "init the project", "set up mae", "bootstrap sdd", "survey", "map the codebase", "refresh the map".
+description: Use once to bootstrap or adopt a project for the mae SDD workflow, then re-run only to refresh. Questionnaire-driven; detects new vs existing projects, scaffolds docs/constitution.md, the core rules, validator, permissions — then surveys the project into docs/PROJECT.md + docs/architecture-map.md (the two documents every later stage reads). specs/ is not scaffolded — /mae:start creates it on demand. On a re-run it skips existing scaffold files and incrementally re-surveys a stale map. Triggers on "init the project", "set up mae", "bootstrap sdd", "survey", "map the codebase", "refresh the map".
 disable-model-invocation: false
 allowed-tools: Read, Glob, Grep, Bash, Write, AskUserQuestion
 ---
@@ -10,8 +10,10 @@ allowed-tools: Read, Glob, Grep, Bash, Write, AskUserQuestion
 Run this **once** to stand a project up on the mae workflow. It does two jobs in one
 pass, in order:
 
-1. **Scaffold the SDD layer** — `docs/constitution.md`, the core rules, `specs/`, the
+1. **Scaffold the SDD layer** — `docs/constitution.md`, the core rules, the
    validator, permissions (optional e2e/CI) — and fill the constitution from an interview.
+   `specs/` is **not** scaffolded; `/mae:start` creates `specs/<feature>/` on demand when
+   a feature is planned.
 2. **Survey the project** into the **two documents** every later stage depends on —
    `docs/PROJECT.md` (business context) and `docs/architecture-map.md` (structural map,
    stamped with the commit it reflects).
@@ -207,7 +209,7 @@ not deciding.
 
 ```
 ## What I did
-- SDD layer scaffolded (constitution, core rules, specs, validator, permissions; optional e2e/CI) and constitution filled from the interview
+- SDD layer scaffolded (constitution, core rules, validator, permissions; optional e2e/CI) and constitution filled from the interview
 - docs/PROJECT.md — <created | refreshed sections: …>
 - docs/architecture-map.md — reflects_commit <sha>, <full scan | incremental: modules …>
 - <decision records / roadmap seed, if greenfield>

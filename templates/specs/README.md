@@ -1,12 +1,17 @@
 # specs/
 
-Drop-zone for feature specs. One folder per feature: `specs/<feature-name>/spec.md`.
+Per-feature artifacts. One folder per feature: `specs/<feature-name>/`. This folder is
+**not** scaffolded by `/mae:init` — `/mae:start` creates `specs/<feature>/` on demand
+when it persists a plan (`specs/<feature>/plan.md`).
 
-A spec is the input artifact for a feature. The `/mae:start` skill authors it
+A `spec.md` beside the plan is **optional**: `/mae:start` recommends one for large
+(L/XL) features and skips it for small ones, where the plan is the source of truth. You
+may also bring your own spec file and point `/mae:start` at it.
+
+When a spec exists it is the input artifact for the feature: `/mae:start` authors it
 through an interview, `spec-analyst` reconciles it against `docs/constitution.md` /
-`AGENTS.md` / `docs/` and adversarially attacks it in the same pass, and the resulting
-plan (`specs/<feature>/plan.md`) is built against it. The `/mae:finish` skill
-turns its **Definition of done** into the PR checklist.
+`AGENTS.md` / `docs/` and adversarially attacks it in the same pass, and the plan is
+built against it. `/mae:finish` turns its **Definition of done** into the PR checklist.
 
 Copy `_template/spec.md` to start a new one.
 

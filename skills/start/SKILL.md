@@ -1,6 +1,6 @@
 ---
 name: mae:start
-description: Use to begin a feature from a Markdown feature-spec (task description, idea, scenarios, definition of done) or a free-text task. Interviews the user to build the spec, persists it, cuts a task branch off an updated base, sizes and routes the work, orchestrates recon + spec analysis + clarifying questions, then drops into Plan Mode and persists the approved plan. Triggers on "start a feature", "new feature", "implement this spec", or a path under specs/.
+description: Use to begin a feature from a Markdown feature-spec (task description, idea, scenarios, definition of done), your own spec file, or a free-text task. A spec is optional and created on demand — recommended for large (L/XL) features; small features run plan-only. Uses an existing spec if you have one, cuts a task branch off an updated base, sizes and routes the work, orchestrates recon + spec analysis + clarifying questions, then drops into Plan Mode and persists the approved plan. Triggers on "start a feature", "new feature", "implement this spec", or a path under specs/.
 disable-model-invocation: false
 allowed-tools: Read, Glob, Grep, Bash, Write, AskUserQuestion
 ---
@@ -16,25 +16,24 @@ Depth is proportional to feature size (Step 3) — but a step is only ever skipp
 
 ## Steps
 
-1. **Locate & persist the spec.** The spec is the source of truth — it carries the
-   **definition of done** that `/mae:finish` turns into the PR checklist.
-   - Given a path (`specs/<feature>/spec.md`): read it. Confirm the four sections —
-     **task description**, **idea**, **scenarios** (positive/negative), **definition of
-     done** — and the frontmatter (`status`, `size`, `route`). If a required section is
-     missing, stop and ask the user to complete it (copy `specs/_template/spec.md`).
-   - Given free-text: this is an **interview, not a draft-and-confirm**. Do not write the
-     whole spec and ask the user to approve it in one shot. `superpowers:brainstorming`
-     is **not** used here — spec authoring is mae's own interview. Instead, walk the
-     decision tree **one question at a time** with `AskUserQuestion`: derive a kebab-case
-     feature name, then work through task description, idea, scenarios
-     (positive/negative), and definition of done question by question. Every question
-     carries your **recommended answer** with a one-line why — the user confirms or
-     overrides, never fills a blank page. Only once scenarios and the DoD are resolved do
-     you draft and **save** `specs/<feature>/spec.md` from `specs/_template/spec.md`. No
-     spec file → no DoD → no PR later.
-   - **Visual references:** if the spec links Figma exports, confirm they exist under
+1. **Locate an existing spec (don't create one yet).** A spec is **optional** — when one
+   exists it is the source of truth and carries the **definition of done** that
+   `/mae:finish` turns into the PR checklist. The decision to *create* a spec is deferred
+   to Step 3 (size-aware); here you only find one if it already exists and always derive
+   the feature name.
+   - **Given a spec path** (`specs/<feature>/spec.md`): read it. Confirm the four
+     sections — **task description**, **idea**, **scenarios** (positive/negative),
+     **definition of done** — and the frontmatter (`status`, `size`, `route`). If a
+     required section is missing, stop and ask the user to complete it.
+   - **No path given:** ask **one** `AskUserQuestion` — *"Do you already have a feature
+     spec file for this?"* Bring-your-own is first-class.
+     - **Yes** → the user points at it; read + validate it as above.
+     - **No** → don't author a spec now. Derive just the kebab-case **feature name** from
+       the task (one question if it isn't obvious). The create-or-skip decision happens in
+       Step 3 once size is known.
+   - **Visual references:** if a spec links Figma exports, confirm they exist under
      `specs/<feature>/design/`. Missing linked images → flag, don't invent.
-   - The **feature name = the spec folder name**. It drives the branch name.
+   - The **feature name** drives the branch name (and the spec folder if one is created).
 
 2. **Cut the task branch off an updated base.**
    - Refuse to start on a dirty tree: `git status --porcelain` must be empty. If dirty,
@@ -47,12 +46,31 @@ Depth is proportional to feature size (Step 3) — but a step is only ever skipp
      untouched (parallel work), invoke `superpowers:using-git-worktrees` for an isolated
      worktree. Not the default.
 
-3. **Size & route (one question).** Ask **one** `AskUserQuestion` to set the depth, then
-   write `size` + `route` into the spec frontmatter and flip `status` to `in-progress`.
+3. **Size & route, then the spec decision.** Ask **one** `AskUserQuestion` to set the
+   depth.
    - **Size** — XS / S / M / L / XL, judged on four signals: expected number of PRs,
      time-to-merge, new modules/APIs/migrations, breaking changes.
    - **Route** — `quick` / `standard` / `full`. Default mapping (offer, let the user
      override): **XS/S → quick**, **M → standard**, **L/XL → full**.
+   - **Spec decision (only if no spec exists yet):**
+     - **Large (L/XL)** → *recommend a spec.* Ask **one** `AskUserQuestion`: *"This is a
+       large feature — implementation may continue in another session. Create a tracked
+       spec (with a definition of done) now?"* Default **Yes**. On yes, run the spec
+       interview and **save** `specs/<feature>/spec.md` (see below).
+     - **Small (XS/S/M)** → default **no spec**; the plan is the source of truth. The user
+       may still opt in — offer it, don't push.
+   - **Authoring a spec on demand** (when the user opts in, or brought their own): this is
+     an **interview, not a draft-and-confirm** — `superpowers:brainstorming` is not used;
+     spec authoring is mae's own interview. Walk the decision tree **one question at a
+     time** with `AskUserQuestion` — task description, idea, scenarios (positive/negative),
+     definition of done — each with your **recommended answer** and a one-line why. Only
+     once scenarios and the DoD are resolved, create `specs/` on demand and **save**
+     `specs/<feature>/spec.md` from the plugin template
+     `${CLAUDE_PLUGIN_ROOT}/templates/specs/_template/spec.md`.
+   - **Record size/route/status.** If a spec exists, write `size` + `route` into its
+     frontmatter and flip `status` to `in-progress`. If there is **no spec**, carry
+     `size`/`route` into the plan (Step 8) instead — there is no spec frontmatter to hold
+     them.
    - The route governs the optional stages below:
 
      | Route | Recon | Spec analysis | Design note (Step 6) | e2e plan (finish) |
@@ -65,13 +83,14 @@ Depth is proportional to feature size (Step 3) — but a step is only ever skipp
      still runs the migration-relevant steps. Announce every auto-skip with its reason.
 
 4. **Reconnaissance.** Dispatch the built-in **Explore** agent (read-only) with the spec
-   + target surface. Ask it for a **delta analysis** with `path:line` citations — it
+   (or the task text when there is no spec) + target surface. Ask it for a **delta analysis** with `path:line` citations — it
    reads the project's surface docs first (overview → `docs/projects/<app>.md` /
    `docs/packages/<pkg>.md` → the system map produced by `/mae:init`), then returns
    brownfield delta (what changes vs exists, blast radius, reuse) or greenfield
    structure. Wait for it.
 
-5. **Spec analysis.** Dispatch **`spec-analyst`** (read-only) with the spec, the
+5. **Spec analysis.** Dispatch **`spec-analyst`** (read-only) with the spec — or the
+   inline task text when there is no spec (the analyst accepts either) — the
    explorer's map, `docs/constitution.md`, `AGENTS.md`, `docs/PROJECT.md` (business
    context), `docs/`. It now runs both phases in one dispatch — reconcile the spec
    against constitution/code, then an adversarial pass in the same clean context hunting
@@ -91,12 +110,17 @@ Depth is proportional to feature size (Step 3) — but a step is only ever skipp
    - Put `spec-analyst`'s ranked questions (blockers first) to the user one at a time via
      `AskUserQuestion`, each with your recommended answer and a one-line why — this is
      the same interview doctrine from Step 1, not a dumped list. Fold answers into the
-     spec. Blockers → resolve with the user before Plan Mode; the rest inform the plan.
+     spec (or, when there is no spec, into the plan). Blockers → resolve with the user
+     before Plan Mode; the rest inform the plan.
 
 8. **Plan Mode → persist.** Enter Plan Mode and create the plan with
    `superpowers:writing-plans`, grounded in recon + analysis + answers. The plan document
    location is `specs/<feature>/plan.md` — this overrides that skill's default location;
-   it explicitly honors user preference. **Wait for approval** (`ExitPlanMode`). On
+   it explicitly honors user preference. Writing the plan **creates `specs/<feature>/` on
+   demand** (this is the one folder that always lands per feature; `spec.md` beside it is
+   optional). **When there is no spec, the plan is the source of truth** — carry the
+   `size`/`route` into it and include a **Definition of done / acceptance** section so
+   `/mae:finish` has criteria to check. **Wait for approval** (`ExitPlanMode`). On
    approval, save the plan so the work survives across sessions. Then offer how
    implementation proceeds: `superpowers:subagent-driven-development` (recommended — a
    fresh subagent per task) or `superpowers:executing-plans` (inline, main context,
@@ -104,7 +128,8 @@ Depth is proportional to feature size (Step 3) — but a step is only ever skipp
    `superpowers:test-driven-development`.
 
 9. **Promote on the roadmap.** Move this feature into **Now** in `docs/roadmap.md`
-   (linked to its spec). `/mae:finish` moves it to **Shipped** later.
+   (linked to its spec, or its plan when there is no spec). `/mae:finish` moves it to
+   **Shipped** later.
 
 10. **Large task? Offer, don't impose.** Big/parallelizable plan → *offer*
     `superpowers:dispatching-parallel-agents` as an explicit choice. Default is the
@@ -114,14 +139,14 @@ Depth is proportional to feature size (Step 3) — but a step is only ever skipp
 
 ```
 ## What I did
-- specs/<feature>/spec.md — status: in-progress, size <S>, route <quick>
+- specs/<feature>/spec.md — status: in-progress, size <S>, route <quick>   (omit if no spec)
 - feat/<feature> — branch off <base>@<sha>
-- specs/<feature>/plan.md — approved plan
+- specs/<feature>/plan.md — approved plan (carries size/route + DoD when there's no spec)
 - docs/roadmap.md — promoted to Now
 
 ## Review before continuing
 - specs/<feature>/plan.md      ← the approved plan
-- specs/<feature>/spec.md      ← DoD + scenarios the plan must satisfy
+- specs/<feature>/spec.md      ← DoD + scenarios the plan must satisfy   (omit if no spec)
 
 ## Run next
 Implement against the plan (`superpowers:subagent-driven-development` or

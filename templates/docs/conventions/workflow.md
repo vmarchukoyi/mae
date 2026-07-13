@@ -37,10 +37,10 @@ once to understand the shape; invoke the skill when you run a stage.
               ┌───────────────┴───────────────┐
               ▼                                ▼
         per feature                        per bug
-  specs/<feature>/spec.md               a bug report
+  a task (spec optional)                a bug report
         │                                    │
   /mae:start                      /mae:fix
-   (interview → size+route → recon →      (reproduce → trace to AC →
+   (size+route → optional spec → recon →  (reproduce → trace to AC →
     spec-analyst → Plan Mode via           failing test → smallest fix →
     superpowers:writing-plans → plan.md)   same gate → spec patch + record)
         │                                    │
@@ -60,18 +60,20 @@ once to understand the shape; invoke the skill when you run a stage.
 |---|---|---|
 | `docs/PROJECT.md` | `/mae:init` | every stage (business context) |
 | `docs/architecture-map.md` | `/mae:init` | recon, planning (structural map + machine commands) |
-| `specs/<feature>/spec.md` | the `/mae:start` interview (template `specs/_template/spec.md`) | `spec-analyst`, planning, DoD check |
-| `specs/<feature>/plan.md` | `/mae:start` (Plan Mode via `superpowers:writing-plans`) | execution, reviewer |
+| `specs/<feature>/spec.md` | **optional** — the `/mae:start` interview, on demand (recommended for L/XL; plugin template `templates/specs/_template/spec.md`) | `spec-analyst`, planning, DoD check |
+| `specs/<feature>/plan.md` | `/mae:start` (Plan Mode via `superpowers:writing-plans`); `specs/<feature>/` is created here on demand | execution, reviewer, DoD check when there's no spec |
 | `specs/<feature>/design/*` | designer (Figma exports) | `spec-analyst`, execution |
 | `docs/features/<slug>.md` | `/mae:finish` | future agents ("why does X work this way") |
 | `_fixes/<date>-<slug>.md` | `/mae:fix` | future agents (bug root causes) |
 
 ## Spec lifecycle (frontmatter, no archive folder)
 
-A spec's status lives in its frontmatter — `draft` → `in-progress` (set by
-`/mae:start`) → `done` (set by `/mae:finish`). There is no `archive/`
-directory; the `done` status is the record. `size` and `route` are also written to the
-frontmatter by `/mae:start`.
+When a feature **has** a spec, its status lives in the spec frontmatter — `draft` →
+`in-progress` (set by `/mae:start`) → `done` (set by `/mae:finish`). There is no
+`archive/` directory; the `done` status is the record. `size` and `route` are also
+written to the frontmatter by `/mae:start`. **When there is no spec**, the plan carries
+`size`/`route` and its Definition-of-done section, and the roadmap entry tracks status
+instead.
 
 ## The agent roster (3 core + 2 optional)
 

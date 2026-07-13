@@ -21,7 +21,7 @@ Never conflate them. Detailed, path-scoped rules live under `.claude/rules/`.
 | Skill | Role |
 |---|---|
 | `/mae:init` | Bootstrap or adopt this project (questionnaire), **then** survey the codebase → `docs/PROJECT.md` + `docs/architecture-map.md`. One-time; re-run to refresh. |
-| `/mae:start` | Spec interview → recon → `spec-analyst` → Plan Mode → `specs/<feature>/plan.md`. |
+| `/mae:start` | Optional spec (on demand, recommended for L/XL) → recon → `spec-analyst` → Plan Mode → `specs/<feature>/plan.md`. |
 | `/mae:finish` | Review → verification gate → test gate → DoD vs diff → docs → draft PR, then STOP. |
 | `/mae:fix` | Reproduce → failing test → smallest fix → same gate → record. |
 

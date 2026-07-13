@@ -15,7 +15,8 @@ How project knowledge is written and kept current so a future agent ramps fast.
 | `docs/packages/<pkg>.md` | One doc per shared **package** | durable |
 | `docs/conventions/*.md` | Rules for agents (git, this contract, workflow) | durable |
 | `docs/features/<slug>.md` | Per-feature record written at `/mae:finish` | durable |
-| `specs/<feature>/spec.md` | Feature input (task/idea/DoD) | per-feature |
+| `specs/<feature>/plan.md` | Approved plan (source of truth when there's no spec). `/mae:start` creates `specs/<feature>/` on demand. | per-feature |
+| `specs/<feature>/spec.md` | Feature input (task/idea/DoD) — **optional**, on demand (recommended for L/XL). | per-feature |
 
 Every doc names which surface it covers so an agent always knows *which project* it is in.
 In a multi-project monorepo, never write a doc that assumes a single app.

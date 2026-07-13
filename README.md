@@ -95,8 +95,8 @@ opening the project gets both automatically.
 
 | Skill | Role |
 |---|---|
-| **`/mae:init`** | Bootstrap or adopt a project (questionnaire): constitution, core rules, specs, validator, permissions — **then** survey the codebase → `docs/PROJECT.md` + `docs/architecture-map.md` (stamped with the commit). One-time; re-run to refresh. |
-| **`/mae:start`** | Spec interview → recon → `spec-analyst` → Plan Mode → `specs/<feature>/plan.md`. |
+| **`/mae:init`** | Bootstrap or adopt a project (questionnaire): constitution, core rules, validator, permissions — **then** survey the codebase → `docs/PROJECT.md` + `docs/architecture-map.md` (stamped with the commit). One-time; re-run to refresh. |
+| **`/mae:start`** | Optional spec (on demand, recommended for L/XL) → recon → `spec-analyst` → Plan Mode → `specs/<feature>/plan.md`. |
 | **`/mae:finish`** | Review loop → verification gate → test gate → DoD-vs-diff → docs → drafts a PR, then STOPS. |
 | **`/mae:fix`** | Reproduce → failing test → smallest fix → same gate → record. |
 
@@ -133,10 +133,14 @@ exists (re-runs show a diff instead of overwriting):
 - **`docs/constitution.md`** — engineering law (stack lock, hard rules, Definition of Done).
 - **`.claude/rules/`** — the always-on core rules: `engineering.md`, `testing.md`, `git.md`.
 - **`docs/PROJECT.md`** + **`docs/architecture-map.md`** — the business and structural memory.
-- **`specs/`** — the spec template and lifecycle; every feature starts as a spec.
 - **`scripts/validate-workflow.mjs`** — checks the project's artifacts, links, and freshness.
 - **`.claude/settings.json`** — permissions (deny/ask/allow) and both plugins enabled.
 - **Optional:** `--e2e` (Playwright planner/runner + MCP).
+
+`specs/` is **not** scaffolded. `/mae:start` creates `specs/<feature>/` on demand when it
+persists a plan; a `spec.md` beside it is optional — recommended for large (L/XL)
+features, skipped for small ones (the plan is the source of truth). Bring your own spec
+file and `/mae:start` will use it.
 
 ---
 

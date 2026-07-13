@@ -7,7 +7,8 @@
 //   node scripts/scaffold.mjs --target <dir> [--e2e]
 //
 // Behavior:
-//   - Copies templates/{docs,specs,scripts} → <target>/ (skip existing files).
+//   - Copies templates/{docs,scripts} → <target>/ (skip existing files). specs/ is
+//     NOT scaffolded — it is created on demand by /mae:start when a feature is planned.
 //   - Copies templates/rules/* (the always-on core rules) → <target>/.claude/rules/.
 //   - Copies templates/AGENTS.md → <target>/AGENTS.md (skip if present).
 //   - Deep-merges templates/settings.json into <target>/.claude/settings.json
@@ -113,7 +114,8 @@ function mergeMcp() {
 }
 
 // --- run -------------------------------------------------------------------
-for (const sub of ['docs', 'specs', 'scripts']) {
+// specs/ is intentionally omitted — /mae:start creates specs/<feature>/ on demand.
+for (const sub of ['docs', 'scripts']) {
   copyDir(join(TEMPLATES, sub), join(target, sub));
 }
 

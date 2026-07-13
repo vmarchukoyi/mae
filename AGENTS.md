@@ -11,8 +11,9 @@ skills/                 the workflow skills (init, start, finish, fix)
                         and using-mae
 agents/                 the 3 core subagents (spec-analyst, code-reviewer, test-runner)
 hooks/                  hooks.json + run-hook.cmd wrapper + guard / session-start
-templates/              everything /mae:init scaffolds INTO a user project
-                        (AGENTS.md, rules/, specs/, agents/, docs/, ci/, scripts/, settings.json)
+templates/              what mae lays into a user project
+                        (AGENTS.md, rules/, agents/, docs/, ci/, scripts/, settings.json
+                        scaffolded by /mae:init; specs/_template used on demand by /mae:start)
 scripts/check-plugin.mjs   the CI gate for this repo
 scripts/scaffold.mjs       deterministic file placement used by /mae:init
 docs/superpowers-compat.md the superpowers skills mae depends on + verified version
